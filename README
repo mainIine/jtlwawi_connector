@@ -1,33 +1,38 @@
 JTL-Wawi Connector für SEO:mercari
 ===================================
 
-JTL-Wawi Connector ist ein kostenloses Modul für den Shop SEO:mercari, um automatische Synchronisation zwischen der kostenlosen Warenwirtschaft JTL-Wawi und SEO:mercari zu ermöglichen.
+JTL-Wawi Connector ist ein kostenloses Modul für den Online-Shop SEO:mercari, um automatische Synchronisation zwischen der kostenlosen Warenwirtschaft JTL-Wawi und SEO:mercari zu ermöglichen.
 
 
 JTL-WaWi Connector für SEO:mercari
 =============================================
-JTL-WaWi Connector für osCommerce, Zen Cart finden man unter http://www.jtl-software.de/jtlwawi_connector.php
+JTL-WaWi Connector für SEO:mercari können Sie unter https://github.com/siekiera-media/jtlwawi_connector immer aktuell downloaden.
+
 
 EIGENES RISIKO
 ==============
-Dieses Modul wird - wie jede andere Contribution - auf eigens Risiko betrieben. JTL-Software übernimmt keinerlei Haftung für die Installation und Nutzung von JTL-Wawi Connector. Insbesondere haftet JTL-Software nicht für evtl. durch JTL-Wawi Connector entstandene Schäden.
+Dieses Modul wird - wie jede andere Contribution - auf eigens Risiko betrieben. JTL-Software/SEO:mercari übernimmt keinerlei Haftung für die Installation und Nutzung von JTL-Wawi Connector. Insbesondere haftet JTL-Software/SOE:mercari nicht für evtl. durch JTL-Wawi Connector entstandene Schäden.
+
 
 LIZENZ
 ======
 Dieses Modul wurde unter der GPL veröffentlicht - siehe hierzu LICENSE.txt. 
-Urheber des Moduls ist JTL-Software.
+Urheber des Moduls ist JTL-Software(http://www.jtl-software.de/) und modifiziert wurde es von Siekiera Media (siekiera-media.de)
+
 
 INSTALLATION
 ============
 Die neusten Installationsanleitung findet man stets hier: http://www.jtl-software.de/jtlwawi_connector.php
 
-1. Erstellen Sie als Erstes eine Sicherheitskopie Ihrer Shopdatenbank und evtl. JTL-Wawi Datenbank!
+1. Erstellen Sie als Erstes eine Sicherheitskopie Ihrer Shopdatenbank und evtl. der JTL-Wawi Datenbank!
 
-2. Uploaden Sie das gesamte Verzeichnis jtlwawi_connector mit einem FTP-Programm in Ihren Shop unter admin/includes/modules/.
+2. Erstellen Sie auf dem Server /admin/includes/modules/ den Ordner jtlwawi_connector.
 
-3. Rufen Sie mit einem Browser http://IhreShopDomain.de/admin/includes/modules/jtlwawi_connector/install/index.php auf, treffen Sie dort Ihre Einstellungen und drücken auf Installieren. Notieren Sie sich die Einstellungen, die Sie in JTL-Wawi eintragen müssen unter Einstellungen->Shop-Einstellungen.
+2. Uploaden Sie den gesamten Inhalt des Ordners "siekiera-media-jtlwawi:connector-xxxx" mit einem FTP-Programm in Ihren Shop unter /admin/includes/modules/jtlwawi_connector.
+
+3. Rufen Sie mit einem Browser http://www.mein-shop.de/admin/includes/modules/jtlwawi_connector/install/ auf, treffen Sie dort Ihre Einstellungen und drücken auf Installieren. Notieren Sie sich die Einstellungen, die Sie in JTL-Wawi eintragen müssen unter Einstellungen->Shop-Einstellungen.
 
 4. Führen Sie die Einstellungen in JTL-Wawi unter Shop-Einstellungen durch. Fertig.
 
 
-Ideen, Kritik und Verbesserungsvorschläge werden im Forum berücksichtigt.
+Bei Problemen oder Fragen bitte im Forum - http://forum.seo-mercari.de/ melden.
