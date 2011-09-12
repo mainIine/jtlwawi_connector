@@ -1,0 +1,105 @@
+<?php
+/**
+ * jtlwawi_connector/dbeS/GetKundeZuBestellung.php
+ * Synchronisationsscript
+ * 
+ * Es gelten die Nutzungs- und Lizenzhinweise unter http://www.jtl-software.de/jtlwawi.php
+ * 
+ * @author JTL-Software <thomas@jtl-software.de>
+ * @copyright 2006, JTL-Software
+ * @link http://jtl-software.de/jtlwawi.php
+ * @version v1.03 / 12.10.06
+*/
+
+require_once("syncinclude.php");
+
+$return=3;
+if (auth()) {
+	if (intval($_POST['KeyBestellung'])) {
+		$return=0;
+		
+		//hole einstellungen 
+		$cur_query = eS_execute_query("select mappingHaendlerkunde from ".DB_PREFIX."eazysales_einstellungen");
+		$einstellungen = mysql_fetch_object($cur_query);
+		$haendler_arr = explode(";",$einstellungen->mappingHaendlerkunde);
+		
+		//hole order		
+		$cur_query = eS_execute_query("select * from ".DB_PREFIX."orders where orders_id=".intval($_POST['KeyBestellung']));
+		$Kunde = mysql_fetch_object($cur_query);
+
+		//zusatzinfos vom kunden holen		
+		$cur_query = eS_execute_query("SELECT 
+											c.customers_gender, 
+											c.customers_newsletter, 
+											c.customers_fax, 
+											c.customers_vat_id, 
+											date_format(c.customers_dob, \"%d.%m.%Y\") AS geburtsdatum 
+										FROM 
+											".DB_PREFIX."orders o, 
+											".DB_PREFIX."customers c
+										WHERE 
+											o.customers_id = c.customers_id 
+										AND 
+											c.customers_id = ".$Kunde->customers_id);
+		$cust = mysql_fetch_object($cur_query);
+		
+		$Kunde->customers_gender = $cust->customers_gender;
+		$Kunde->customers_newsletter = $cust->customers_newsletter;
+		$Kunde->customers_fax = $cust->customers_fax;
+		$Kunde->customers_vat_id = $cust->customers_vat_id;
+		$Kunde->geburtsdatum = $cust->geburtsdatum;
+		
+		$Kunde->cAnrede="Frau";
+		if ($Kunde->customers_gender=="m")
+			$Kunde->cAnrede="Herr";
+			
+		$Kunde->cHaendler="N";
+		if (in_array($Kunde->customers_status,$haendler_arr))
+			$Kunde->cHaendler="Y";
+			
+		$Kunde->cNewsletter="N";
+		if ($Kunde->customers_newsletter)
+			$Kunde->cNewsletter="Y";
+			
+		if (!$Kunde->billing_firstname && !$Kunde->billing_lastname)
+		{
+			list($Kunde->billing_firstname, $Kunde->billing_lastname) = split(" ",$Kunde->billing_name);
+		}
+		
+		//falls kein kunde existiert, key muss irgendwo her!
+		if (!$Kunde->customers_id)
+			$Kunde->customers_id = 10000000-$Kunde->orders_id;
+		
+		echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$Kunde->customers_id)).';');
+		echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$Kunde->customers_id)).';');
+		echo(';');
+		echo('"*****";');
+		echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$Kunde->cAnrede)).';');
+		echo(';'); //Titel
+		echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$Kunde->billing_firstname)).';');
+		echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$Kunde->billing_lastname)).';');
+		echo(CSVkonform(iconv("UTF-8","ISO-8859-1",substr($Kunde->billing_company,0,49))).';');
+		echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$Kunde->billing_street_address)).';');
+		echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$Kunde->billing_postcode)).';');
+		echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$Kunde->billing_city)).';');
+		echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$Kunde->billing_country)).';');
+		echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$Kunde->customers_telephone)).';');
+		echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$Kunde->customers_fax)).';');
+		echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$Kunde->customers_email_address)).';');
+		echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$Kunde->cHaendler)).';');
+		echo(';'); //Rabatt
+		echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$Kunde->customers_vat_id)).';');
+		echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$Kunde->cNewsletter)).';');
+		echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$Kunde->geburtsdatum)).';'); //Geburtstag
+		echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$Kunde->customers_suburb)).';'); //adresszusatz
+		echo(';'); //www
+		echo("\n");
+ 	}
+	else
+		$return=5;
+}
+
+mysql_close();
+echo($return);
+logge($return);
+?>
