@@ -1,7 +1,7 @@
 <?php
 /**
  * jtlwawi_connector/install/index.php
- * Datenbank installscript f�r JTL-Wawi Connector
+ * Datenbank installscript für JTL-Wawi Connector
  * 
  * Es gelten die Nutzungs- und Lizenzhinweise unter http://www.jtl-software.de/jtlwawi.php
  * 
