@@ -57,16 +57,16 @@ if (auth())
 		
 		if ($ZahlungsInfo->send==1)
 		{
-			echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$ZahlungsInfo->orders_id)).';');
-			echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$ZahlungsInfo->orders_id)).';');
-			echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$ZahlungsInfo->cBankName)).';');
-			echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$ZahlungsInfo->cBLZ)).';');
-			echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$ZahlungsInfo->cKontoNr)).';');
-			echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$ZahlungsInfo->cKartenNr)).';');
-			echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$ZahlungsInfo->cGueltigkeit)).';');
-			echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$ZahlungsInfo->cCVV)).';');
-			echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$ZahlungsInfo->cKartenTyp)).';');
-			echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$ZahlungsInfo->cInhaber)).';');
+			echo(CSVkonform($ZahlungsInfo->orders_id).';');
+			echo(CSVkonform($ZahlungsInfo->orders_id).';');
+			echo(CSVkonform($ZahlungsInfo->cBankName).';');
+			echo(CSVkonform($ZahlungsInfo->cBLZ).';');
+			echo(CSVkonform($ZahlungsInfo->cKontoNr).';');
+			echo(CSVkonform($ZahlungsInfo->cKartenNr).';');
+			echo(CSVkonform($ZahlungsInfo->cGueltigkeit).';');
+			echo(CSVkonform($ZahlungsInfo->cCVV).';');
+			echo(CSVkonform($ZahlungsInfo->cKartenTyp).';');
+			echo(CSVkonform($ZahlungsInfo->cInhaber).';');
 			echo("\n");
 		}
 	}

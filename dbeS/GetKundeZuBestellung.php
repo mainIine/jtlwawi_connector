@@ -70,28 +70,28 @@ if (auth()) {
 		if (!$Kunde->customers_id)
 			$Kunde->customers_id = 10000000-$Kunde->orders_id;
 		
-		echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$Kunde->customers_id)).';');
-		echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$Kunde->customers_id)).';');
+		echo(CSVkonform($Kunde->customers_id).';');
+		echo(CSVkonform($Kunde->customers_id).';');
 		echo(';');
 		echo('"*****";');
-		echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$Kunde->cAnrede)).';');
+		echo(CSVkonform($Kunde->cAnrede).';');
 		echo(';'); //Titel
-		echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$Kunde->billing_firstname)).';');
-		echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$Kunde->billing_lastname)).';');
-		echo(CSVkonform(iconv("UTF-8","ISO-8859-1",substr($Kunde->billing_company,0,49))).';');
-		echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$Kunde->billing_street_address)).';');
-		echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$Kunde->billing_postcode)).';');
-		echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$Kunde->billing_city)).';');
-		echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$Kunde->billing_country)).';');
-		echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$Kunde->customers_telephone)).';');
-		echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$Kunde->customers_fax)).';');
-		echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$Kunde->customers_email_address)).';');
-		echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$Kunde->cHaendler)).';');
+		echo(CSVkonform($Kunde->billing_firstname).';');
+		echo(CSVkonform($Kunde->billing_lastname).';');
+		echo(CSVkonform(substr($Kunde->billing_company,0,49)).';');
+		echo(CSVkonform($Kunde->billing_street_address).';');
+		echo(CSVkonform($Kunde->billing_postcode).';');
+		echo(CSVkonform($Kunde->billing_city).';');
+		echo(CSVkonform($Kunde->billing_country).';');
+		echo(CSVkonform($Kunde->customers_telephone).';');
+		echo(CSVkonform($Kunde->customers_fax).';');
+		echo(CSVkonform($Kunde->customers_email_address).';');
+		echo(CSVkonform($Kunde->cHaendler).';');
 		echo(';'); //Rabatt
-		echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$Kunde->customers_vat_id)).';');
-		echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$Kunde->cNewsletter)).';');
-		echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$Kunde->geburtsdatum)).';'); //Geburtstag
-		echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$Kunde->customers_suburb)).';'); //adresszusatz
+		echo(CSVkonform($Kunde->customers_vat_id).';');
+		echo(CSVkonform($Kunde->cNewsletter).';');
+		echo(CSVkonform($Kunde->geburtsdatum).';'); //Geburtstag
+		echo(CSVkonform($Kunde->customers_suburb).';'); //adresszusatz
 		echo(';'); //www
 		echo("\n");
  	}

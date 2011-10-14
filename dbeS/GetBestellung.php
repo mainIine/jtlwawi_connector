@@ -70,20 +70,20 @@ if (auth())
 				$Bestellung->zahlungsweise = "Zahlungsweise: $Bestellung->payment_method";
 				break;
 		}		
-		echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$Bestellung->orders_id)).';');
-		echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$Bestellung->orders_id)).';');
-		echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$Bestellung->customers_id)).';');
-		echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$Bestellung->orders_id)).';');
-		echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$VersandKey)).';');
+		echo(CSVkonform($Bestellung->orders_id).';');
+		echo(CSVkonform($Bestellung->orders_id).';');
+		echo(CSVkonform($Bestellung->customers_id).';');
+		echo(CSVkonform($Bestellung->orders_id).';');
+		echo(CSVkonform($VersandKey).';');
 		echo(';'); //VersandInfo
 		echo(';'); //Versanddatum
 		echo(';'); //Tracking Nr
-		echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$Bestellung->zahlungsweise)).';');
+		echo(CSVkonform($Bestellung->zahlungsweise).';');
 		echo(';'); //Abgeholt
 		echo(';'); //Status
-		echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$Bestellung->ErstelltDatumF)).';'); 
-		echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$Bestellung->orders_id)).';');
-		echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$Bestellung->comments)).';');
+		echo(CSVkonform($Bestellung->ErstelltDatumF).';'); 
+		echo(CSVkonform($Bestellung->orders_id).';');
+		echo(CSVkonform($Bestellung->comments).';');
 		echo("\n");
 	}
 }

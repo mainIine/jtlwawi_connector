@@ -74,11 +74,11 @@ if (auth())
 			
 			$attribut_arr = mysql_fetch_row($attribut_query);
 			
-			echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$WarenkorbPosEigenschaft->orders_products_attributes_id)).';');
-			echo(CSVkonform(iconv("UTF-8","ISO-8859-1",intval($_POST['KeyBestellPos']))).';');
+			echo(CSVkonform($WarenkorbPosEigenschaft->orders_products_attributes_id).';');
+			echo(CSVkonform(intval($_POST['KeyBestellPos'])).';');
 			echo(';');
-			echo(CSVkonform(iconv("UTF-8","ISO-8859-1",getEsEigenschaftsWert($attribut_arr[0],getEsArtikel($WarenkorbPosEigenschaft->products_id)))).';');
-			echo(CSVkonform(iconv("UTF-8","ISO-8859-1",($WarenkorbPosEigenschaft->options_values_price+$WarenkorbPosEigenschaft->options_values_price*$WarenkorbPosEigenschaft->products_tax/100)*$preisprefix)).';');
+			echo(CSVkonform(getEsEigenschaftsWert($attribut_arr[0],getEsArtikel($WarenkorbPosEigenschaft->products_id))).';');
+			echo(CSVkonform(($WarenkorbPosEigenschaft->options_values_price+$WarenkorbPosEigenschaft->options_values_price*$WarenkorbPosEigenschaft->products_tax/100*$preisprefix)).';');
 			echo("\n");
 		}
 	}

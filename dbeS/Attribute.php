@@ -20,11 +20,11 @@ if (auth())
 	{
 		$return = 0;
 		
-		$Attribut->products_id = iconv("ISO-8859-1","UTF-8",getFremdArtikel(intval($_POST["KeyArtikel"])));
-		$Attribut->name = iconv("ISO-8859-1","UTF-8",$_POST["Name"]);
-		$Attribut->content = iconv("ISO-8859-1","UTF-8",$_POST["StringWert"]);
+		$Attribut->products_id = getFremdArtikel(intval($_POST["KeyArtikel"]));
+		$Attribut->name = $_POST["Name"];
+		$Attribut->content = $_POST["StringWert"];
 		if (strlen($_POST["TextWert"])>0)
-			$Attribut->content = iconv("ISO-8859-1","UTF-8",$_POST["TextWert"]);
+			$Attribut->content = $_POST["TextWert"];
 		attributBearbeiten ($Attribut);
 	}
 }

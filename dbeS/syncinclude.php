@@ -22,6 +22,12 @@ require_once (DOCROOT_PATH.'admin/includes/configure.php');
 $link = mysql_connect (DB_SERVER, DB_SERVER_USERNAME, DB_SERVER_PASSWORD);
 mysql_select_db(DB_DATABASE);
 
+$productsCol = mysql_query("SELECT configuration_value, configuration_key FROM ".DB_PREFIX."configuration WHERE configuration_key LIKE '%GLOBAL_COLUMN_%'");
+while($global = mysql_fetch_array($productsCol)) {
+	if(!defined($global['configuration_key'])) 
+		define($global['configuration_key'], $global['configuration_value'])
+}
+
 define ('ES_ENABLE_LOGGING', 0);
 define ('ES_ATTRIBUTE_AN_BESCHREIBUNG_ANHAENGEN', 0);
 

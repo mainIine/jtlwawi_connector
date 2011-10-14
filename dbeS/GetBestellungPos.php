@@ -49,13 +49,13 @@ if (auth())
 			
 			//mappe bestellpos
 			$kBestellPos = setMappingBestellPos($BestellungPos->orders_products_id);
-			echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$kBestellPos)).';');
-			echo(CSVkonform(iconv("UTF-8","ISO-8859-1",intval($_POST['KeyBestellung']))).';');
-			echo(CSVkonform(iconv("UTF-8","ISO-8859-1",getEsArtikel($BestellungPos->products_id))).';');
-			echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$BestellungPos->products_name)).';');
-			echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$BestellungPos->products_price-$aufpreis)).';');
-			echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$BestellungPos->products_tax)).';');
-			echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$BestellungPos->products_quantity)).';');
+			echo(CSVkonform($kBestellPos).';');
+			echo(CSVkonform(intval($_POST['KeyBestellung'])).';');
+			echo(CSVkonform(getEsArtikel($BestellungPos->products_id)).';');
+			echo(CSVkonform($BestellungPos->products_name).';');
+			echo(CSVkonform($BestellungPos->products_price-$aufpreis).';');
+			echo(CSVkonform($BestellungPos->products_tax).';');
+			echo(CSVkonform($BestellungPos->products_quantity).';');
 			echo("\n");
 		}
 		
@@ -138,12 +138,12 @@ if (auth())
 						$steuersatz = $einstellungen->versandMwst;
 						break;						
 				}
-				echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$kBestellPos)).';');
-				echo(CSVkonform(iconv("UTF-8","ISO-8859-1",intval($_POST['KeyBestellung']))).';');
+				echo(CSVkonform($kBestellPos).';');
+				echo(CSVkonform(intval($_POST['KeyBestellung'])).';');
 				echo(CSVkonform("0").';');
-				echo(CSVkonform(iconv("UTF-8","ISO-8859-1",unhtmlentities($total_pos->title))).';');
-				echo(CSVkonform(iconv("UTF-8","ISO-8859-1",unhtmlentities($total_pos->value))).';');
-				echo(CSVkonform(iconv("UTF-8","ISO-8859-1",$steuersatz)).';');
+				echo(CSVkonform(unhtmlentities($total_pos->title)).';');
+				echo(CSVkonform(unhtmlentities($total_pos->value)).';');
+				echo(CSVkonform($steuersatz).';');
 				echo(CSVkonform("1").';');
 				echo("\n");
 			}

@@ -76,36 +76,36 @@ if (auth())
 			}
 			//baue Response			
 			$Response=CSVkonform("P").";".			
-					CSVkonform(iconv("UTF-8","ISO-8859-1",$product->products_id)).";".
-					CSVkonform(iconv("UTF-8","ISO-8859-1",substr(unhtmlentities($product->products_model),0,20))).";".			
-					CSVkonform(iconv("UTF-8","ISO-8859-1",substr(unhtmlentities($product->products_name),0,255))).";".			
-					CSVkonform(iconv("UTF-8","ISO-8859-1",substr(unhtmlentities($product->products_description),0,64000))).";".			
-					CSVkonform(iconv("UTF-8","ISO-8859-1",substr(unhtmlentities($product->products_short_description),0,4000))).";".			
-					CSVkonform(iconv("UTF-8","ISO-8859-1",get_preisEndkunde($product)+get_preisEndkunde($product)*$currency->value*$tax/100)).";".			
-					CSVkonform(iconv("UTF-8","ISO-8859-1",get_preisEndkunde($product)*$currency->value)).";".			
-					CSVkonform(iconv("UTF-8","ISO-8859-1",$UVP+$UVP*$currency->value*$tax/100)).";".			
-					CSVkonform(iconv("UTF-8","ISO-8859-1",$tax)).";".			
+					CSVkonform($product->products_id).";".
+					CSVkonform(substr(unhtmlentities($product->products_model,0,20))).";".			
+					CSVkonform(substr(unhtmlentities($product->products_name,0,255))).";".			
+					CSVkonform(substr(unhtmlentities($product->products_description,0,64000))).";".			
+					CSVkonform(substr(unhtmlentities($product->products_short_description,0,4000))).";".			
+					CSVkonform(get_preisEndkunde($product+get_preisEndkunde($product)*$currency->value*$tax/100)).";".			
+					CSVkonform(get_preisEndkunde($product*$currency->value)).";".			
+					CSVkonform($UVP+$UVP*$currency->value*$tax/100).";".			
+					CSVkonform($tax).";".			
 					CSVkonform("").";".			
 					CSVkonform("Y").";".			
-					CSVkonform(iconv("UTF-8","ISO-8859-1",$products_status)).";".			
-					CSVkonform(iconv("UTF-8","ISO-8859-1",$product->products_quantity)).";".			
-					CSVkonform(iconv("UTF-8","ISO-8859-1",$vpe)).";".			
+					CSVkonform($products_status).";".			
+					CSVkonform($product->products_quantity).";".			
+					CSVkonform($vpe).";".			
 					CSVkonform("1").";".			
-					CSVkonform(iconv("UTF-8","ISO-8859-1",unhtmlentities($product->products_ean))).";".			
+					CSVkonform(unhtmlentities($product->products_ean)).";".			
 					CSVkonform("").";".		
-					CSVkonform(iconv("UTF-8","ISO-8859-1",get_preisHaendlerKunde($product)+get_preisHaendlerKunde($product)*$currency->value*$tax/100)).";".		
-					CSVkonform(iconv("UTF-8","ISO-8859-1",get_preisHaendlerKunde($product)*$currency->value)).";".		
-					CSVkonform(iconv("UTF-8","ISO-8859-1",$product->products_startpage)).";".		
+					CSVkonform(get_preisHaendlerKunde($product+get_preisHaendlerKunde($product)*$currency->value*$tax/100)).";".		
+					CSVkonform(get_preisHaendlerKunde($product*$currency->value)).";".		
+					CSVkonform($product->products_startpage).";".		
 					CSVkonform("N").";".		
 					CSVkonform("N").";".		
-					CSVkonform(iconv("UTF-8","ISO-8859-1",$product->products_weight)).";".		
+					CSVkonform($product->products_weight).";".		
 					CSVkonform("N").";".		
 					CSVkonform("N").";".		
 					CSVkonform("N").";".		
 					CSVkonform("N").";".		
 					CSVkonform("0").";".		
 					CSVkonform("0").";".		
-					CSVkonform(iconv("UTF-8","ISO-8859-1",unhtmlentities(getManufacturer($product->brand_id)))).";".		
+					CSVkonform(unhtmlentities(getManufacturer($product->brand_id))).";".		
 					get_bildURL($product).";\n";		
 					
 			$Response.=get_cats($product->products_id);
@@ -191,7 +191,7 @@ function get_bildURL($product)
 			}
 		}
 	}
-	$bilderUrls = CSVkonform(iconv("UTF-8","ISO-8859-1",$pic));
+	$bilderUrls = CSVkonform($pic);
 	if ($additional_pics->configuration_value>0)
 	{
 		//hole bilder
@@ -261,7 +261,7 @@ function get_bildURL($product)
 					}
 				}
 			}
-			$bilderUrls.=";".CSVkonform(iconv("UTF-8","ISO-8859-1",$pic));
+			$bilderUrls.=";".CSVkonform($pic);
 		}
 	}
 	
@@ -282,7 +282,7 @@ function get_attribute($product)
 			//Attribut hinzufügen
 			$attribute.=CSVkonform("T").";".			
 				CSVkonform("Lieferstatus").";".
-				CSVkonform(iconv("UTF-8","ISO-8859-1",$status->shipping_status_name)).";\n";			
+				CSVkonform($status->shipping_status_name).";\n";			
 		}
 	}
 	
@@ -291,14 +291,14 @@ function get_attribute($product)
 	{
 		$attribute.=CSVkonform("T").";".			
 			CSVkonform("Rabatt erlaubt").";".
-			CSVkonform(iconv("UTF-8","ISO-8859-1",$product->products_discount_allowed)).";\n";
+			CSVkonform($product->products_discount_allowed).";\n";
 	}
 	
 	//Herstellerlink gesetzt?
 	//Attribut hinzufügen
 	$attribute.=CSVkonform("T").";".			
 		CSVkonform("Herstellerlink").";".
-		CSVkonform(iconv("UTF-8","ISO-8859-1",$product->products_url)).";\n";	
+		CSVkonform($product->products_url).";\n";	
 
 	//ist vpe gesetzt?
 	if ($product->products_vpe_value>0)
@@ -306,7 +306,7 @@ function get_attribute($product)
 		//Attribut hinzufügen
 		$attribute.=CSVkonform("T").";".			
 			CSVkonform("VPE Wert").";".
-			CSVkonform(iconv("UTF-8","ISO-8859-1",$product->products_vpe_value)).";\n";
+			CSVkonform($product->products_vpe_value).";\n";
 	}
 	
 	//VPE Status
@@ -336,32 +336,32 @@ function get_attribute($product)
 	//Reihung
 	$attribute.=CSVkonform("T").";".			
 		CSVkonform("Reihung").";".
-		CSVkonform(iconv("UTF-8","ISO-8859-1",$product->products_sort)).";\n";
+		CSVkonform($product->products_sort).";\n";
 		
 	//Reihungstartseite
 	$attribute.=CSVkonform("T").";".			
 		CSVkonform("Reihung Startseite").";".
-		CSVkonform(iconv("UTF-8","ISO-8859-1",$product->products_startpage_sort)).";\n";
+		CSVkonform($product->products_startpage_sort).";\n";
 		
 	//suchbegriffe
 	$attribute.=CSVkonform("T").";".			
 		CSVkonform("Suchbegriffe").";".
-		CSVkonform(iconv("UTF-8","ISO-8859-1",substr($product->products_keywords,0,255))).";\n";
+		CSVkonform(substr($product->products_keywords,0,255)).";\n";
 				
 	//meta title
 	$attribute.=CSVkonform("T").";".			
 		CSVkonform("Meta Title").";".
-		CSVkonform(iconv("UTF-8","ISO-8859-1",substr($product->products_meta_title,0,255))).";\n";
+		CSVkonform(substr($product->products_meta_title,0,255)).";\n";
 				
 	//meta description
 	$attribute.=CSVkonform("T").";".			
 		CSVkonform("Meta Description").";".
-		CSVkonform(iconv("UTF-8","ISO-8859-1",substr($product->products_meta_description,0,255))).";\n";
+		CSVkonform(substr($product->products_meta_description,0,255)).";\n";
 				
 	//meta keywords
 	$attribute.=CSVkonform("T").";".			
 		CSVkonform("Meta Keywords").";".
-		CSVkonform(iconv("UTF-8","ISO-8859-1",substr($product->products_meta_keywords,0,255))).";\n";
+		CSVkonform(substr($product->products_meta_keywords,0,255)).";\n";
 		
 	return $attribute;
 }
@@ -385,15 +385,15 @@ function get_variationswerte($products_id,$options_id)
 				if ($variation->weight_prefix=="-")
 					$variation->options_values_weight*=-1;
 				$variationswerte.=CSVkonform("W").";".			
-					CSVkonform(iconv("UTF-8","ISO-8859-1",$variation->options_id)).";".
-					CSVkonform(iconv("UTF-8","ISO-8859-1",$variation->products_attributes_id)).";".
-					CSVkonform(iconv("UTF-8","ISO-8859-1",$var_name->products_options_values_name)).";".
-					CSVkonform(iconv("UTF-8","ISO-8859-1",$variation->options_values_price+$variation->options_values_price*$GLOBALS['currency']->value*$GLOBALS['tax']/100)).";".
-					CSVkonform(iconv("UTF-8","ISO-8859-1",$variation->options_values_price)).";".
-					CSVkonform(iconv("UTF-8","ISO-8859-1",$variation->options_values_weight)).";".
-					CSVkonform(iconv("UTF-8","ISO-8859-1",substr($variation->attributes_model,0,30))).";".
-					CSVkonform(iconv("UTF-8","ISO-8859-1",$variation->sortorder)).";".
-					CSVkonform(iconv("UTF-8","ISO-8859-1",$variation->attributes_stock)).";\n";
+					CSVkonform($variation->options_id).";".
+					CSVkonform($variation->products_attributes_id).";".
+					CSVkonform($var_name->products_options_values_name).";".
+					CSVkonform($variation->options_values_price+$variation->options_values_price*$GLOBALS['currency']->value*$GLOBALS['tax']/100).";".
+					CSVkonform($variation->options_values_price).";".
+					CSVkonform($variation->options_values_weight).";".
+					CSVkonform(substr($variation->attributes_model,0,30)).";".
+					CSVkonform($variation->sortorder).";".
+					CSVkonform($variation->attributes_stock).";\n";
 			}
 		}		
 	}
@@ -415,8 +415,8 @@ function get_variationen($products_id)
 			if ($var_name->products_options_id>0)
 			{
 				$variationen.=CSVkonform("V").";".			
-					CSVkonform(iconv("UTF-8","ISO-8859-1",$variation->options_id)).";".
-					CSVkonform(iconv("UTF-8","ISO-8859-1",$var_name->products_options_name)).";".					
+					CSVkonform($variation->options_id).";".
+					CSVkonform($var_name->products_options_name).";".					
 					CSVkonform("Y").";".
 					CSVkonform(0).";\n";
 			}
@@ -462,8 +462,8 @@ function get_staffelpreise($products_id, $endkunde)
 		while ($staffelpreise = mysql_fetch_object($cur_query))
 		{
 			$anzahlStaffelpreise++;
-			$anzahl.=";".CSVkonform(iconv("UTF-8","ISO-8859-1",$staffelpreise->quantity));
-			$preise.=";".CSVkonform(iconv("UTF-8","ISO-8859-1",$staffelpreise->personal_offer*$GLOBALS['currency']->value));
+			$anzahl.=";".CSVkonform($staffelpreise->quantity);
+			$preise.=";".CSVkonform($staffelpreise->personal_offer*$GLOBALS['currency']->value);
 		}
 		if (strlen($anzahl)>0)
 		{
@@ -592,13 +592,13 @@ function get_cats($products_id)
 				}
 				$catimage=$pic;
 			}
-			$res.=CSVkonform(iconv("UTF-8","ISO-8859-1",$vor)).";".			
-				CSVkonform(iconv("UTF-8","ISO-8859-1",unhtmlentities($current_cat->categories_name))).";".
-				CSVkonform(iconv("UTF-8","ISO-8859-1",substr(unhtmlentities($current_cat->categories_description),0,64000))).";".
-				CSVkonform(iconv("UTF-8","ISO-8859-1",$catId)).";".
-				CSVkonform(iconv("UTF-8","ISO-8859-1",$current_cat_status->categories_status)).";".
-				CSVkonform(iconv("UTF-8","ISO-8859-1",$catimage)).";".
-				CSVkonform(iconv("UTF-8","ISO-8859-1",$current_cat_status->sort_order)).";\n";
+			$res.=CSVkonform($vor).";".			
+				CSVkonform(unhtmlentities($current_cat->categories_name)).";".
+				CSVkonform(substr(unhtmlentities($current_cat->categories_description,0,64000))).";".
+				CSVkonform($catId).";".
+				CSVkonform($current_cat_status->categories_status).";".
+				CSVkonform($catimage).";".
+				CSVkonform($current_cat_status->sort_order).";\n";
 		}
 	}
 	if ($res=="")

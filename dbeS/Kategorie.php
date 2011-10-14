@@ -26,8 +26,8 @@ if (auth())
 		$Kategorie->kKategorie = intval($_POST["KeyKategorie"]);
 		$Kategorie->kOberKategorie = intval($_POST["KeyOberKategorie"]);
 		$Kategorie->nSort = intval($_POST["Sort"]);
-		$Kategorie->cName = iconv("ISO-8859-1","UTF-8",realEscape($_POST["KeyName"]));
-		$Kategorie->cBeschreibung = iconv("ISO-8859-1","UTF-8",realEscape($_POST["KeyBeschreibung"]));
+		$Kategorie->cName = $_POST["KeyName"];
+		$Kategorie->cBeschreibung = $_POST["KeyBeschreibung"];
 		$Kategorie->parent_id = 0;
 		
 		if ($Kategorie->kOberKategorie>0)
@@ -36,7 +36,29 @@ if (auth())
 			$categories_id_oberkat = getFremdKategorie($Kategorie->kOberKategorie);
 			if (!$categories_id_oberkat)
 			{
-				eS_execute_query("insert into ".DB_PREFIX."categories (categories_status, date_added, categories_template, listing_template, products_sorting, products_sorting2) values (0,now(),\"$einstellungen->cat_category_template\",\"$einstellungen->cat_listing_template\",\"$einstellungen->cat_sorting\",\"$einstellungen->cat_sorting2\")");
+				eS_execute_query("INSERT INTO 
+										".DB_PREFIX."categories 
+										(categories_status, 
+										date_added, 
+										categories_template,
+										categories_col_top,
+										categories_col_bottom,
+										categories_col_left,
+										categories_col_right,
+										listing_template, 
+										products_sorting, 
+										products_sorting2) 
+									VALUES 
+										(0,
+										NOW(),
+										\"$einstellungen->cat_category_template\",
+										'".GLOBAL_COLUMN_TOP."',
+										'".GLOBAL_COLUMN_BOTTOM."',
+										'".GLOBAL_COLUMN_LEFT."',
+										'".GLOBAL_COLUMN_RIGHT."',
+										\"$einstellungen->cat_listing_template\",
+										\"$einstellungen->cat_sorting\",
+										\"$einstellungen->cat_sorting2\")");
 				//hole id
 				$query = eS_execute_query("select LAST_INSERT_ID()");
 				$categories_id_oberkat_arr = mysql_fetch_row($query);
