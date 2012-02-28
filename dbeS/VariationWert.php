@@ -37,7 +37,7 @@ if (auth())
 		if ($products_options_id>0)
 		{
 			//schaue, ob dieser EigenschaftsWert bereits global existiert für diese Eigenschaft!!
-			$cur_query = eS_execute_query("select products_options_values.products_options_values_id from ".DB_PREFIX."products_options_values, ".DB_PREFIX."products_options_values_to_products_options where products_options_values_to_products_options.products_options_id=$products_options_id and products_options_values_to_products_options.products_options_values_id=products_options_values.products_options_values_id and products_options_values.language_id=$einstellungen->languages_id and products_options_values.products_options_values_name=\"$EigenschaftWert->cName\"");
+			$cur_query = eS_execute_query("SELECT pov.products_options_values_id FROM ".DB_PREFIX."products_options_values pov, ".DB_PREFIX."products_options_values_to_products_options povtpo WHERE povtpo.products_options_id = '".$products_options_id."' AND povtpo.products_options_values_id = pov.products_options_values_id AND pov.language_id = '".$einstellungen->languages_id."' AND pov.products_options_values_name = '".$EigenschaftWert->cName."'");
 			$options_values = mysql_fetch_object($cur_query);
 			
 			if (!$options_values->products_options_values_id)
