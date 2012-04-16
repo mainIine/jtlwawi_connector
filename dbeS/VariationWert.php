@@ -37,14 +37,25 @@ if (auth())
 		if ($products_options_id>0)
 		{
 			//schaue, ob dieser EigenschaftsWert bereits global existiert für diese Eigenschaft!!
-			$cur_query = eS_execute_query("SELECT pov.products_options_values_id FROM ".DB_PREFIX."products_options_values pov, ".DB_PREFIX."products_options_values_to_products_options povtpo WHERE povtpo.products_options_id = '".$products_options_id."' AND povtpo.products_options_values_id = pov.products_options_values_id AND pov.language_id = '".$einstellungen->languages_id."' AND pov.products_options_values_name = '".$EigenschaftWert->cName."'");
-			$options_values = mysql_fetch_object($cur_query);
-			
-			if (!$options_values->products_options_values_id)
+			$cur_query = eS_execute_query("SELECT 
+												pov.products_options_values_id 
+											FROM 
+												".DB_PREFIX."products_options_values,
+												".DB_PREFIX."products_options_values_to_products_options 
+											WHERE 
+												povtpo.products_options_id = '".$products_options_id."'
+											AND 
+												povtpo.products_options_values_id = pov.products_options_values_id 
+											AND 
+												pov.language_id = '".$einstellungen->languages_id."'
+											AND 
+												pov.products_options_values_name = '".$EigenschaftWert->cName."' ");
+
+			if (mysql_num_rows($cur_query) < 1)
 			{
 				//erstelle diesen Wert global
 				//hole max PK
-				$cur_query = eS_execute_query("select max(products_options_values_id) from ".DB_PREFIX."products_options_values");
+				$cur_query = eS_execute_query("SELECT MAX(products_options_values_id) FROM ".DB_PREFIX."products_options_values");
 				$max_id_arr = mysql_fetch_row($cur_query);
 				$options_values->products_options_values_id = $max_id_arr[0]+1;
 				eS_execute_query("insert into ".DB_PREFIX."products_options_values (products_options_values_id,language_id,products_options_values_name) values ($options_values->products_options_values_id,$einstellungen->languages_id,\"$EigenschaftWert->cName\")");			

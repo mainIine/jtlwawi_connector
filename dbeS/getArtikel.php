@@ -77,12 +77,12 @@ if (auth())
 			//baue Response			
 			$Response=CSVkonform("P").";".			
 					CSVkonform($product->products_id).";".
-					CSVkonform(substr(unhtmlentities($product->products_model,0,20))).";".			
-					CSVkonform(substr(unhtmlentities($product->products_name,0,255))).";".			
-					CSVkonform(substr(unhtmlentities($product->products_description,0,64000))).";".			
-					CSVkonform(substr(unhtmlentities($product->products_short_description,0,4000))).";".			
-					CSVkonform(get_preisEndkunde($product+get_preisEndkunde($product)*$currency->value*$tax/100)).";".			
-					CSVkonform(get_preisEndkunde($product*$currency->value)).";".			
+					CSVkonform(substr(unhtmlentities($product->products_model),0,20)).";".			
+					CSVkonform(substr(unhtmlentities($product->products_name),0,255)).";".			
+					CSVkonform(substr(unhtmlentities($product->products_description),0,64000)).";".			
+					CSVkonform(substr(unhtmlentities($product->products_short_description),0,4000)).";".			
+					CSVkonform(get_preisEndkunde($product)+get_preisEndkunde($product)*$currency->value*$tax/100).";".			
+					CSVkonform(get_preisEndkunde($product)*$currency->value).";".			
 					CSVkonform($UVP+$UVP*$currency->value*$tax/100).";".			
 					CSVkonform($tax).";".			
 					CSVkonform("").";".			
@@ -93,8 +93,8 @@ if (auth())
 					CSVkonform("1").";".			
 					CSVkonform(unhtmlentities($product->products_ean)).";".			
 					CSVkonform("").";".		
-					CSVkonform(get_preisHaendlerKunde($product+get_preisHaendlerKunde($product)*$currency->value*$tax/100)).";".		
-					CSVkonform(get_preisHaendlerKunde($product*$currency->value)).";".		
+					CSVkonform(get_preisHaendlerKunde($product)+get_preisHaendlerKunde($product)*$currency->value*$tax/100).";".		
+					CSVkonform(get_preisHaendlerKunde($product)*$currency->value).";".		
 					CSVkonform($product->products_startpage).";".		
 					CSVkonform("N").";".		
 					CSVkonform("N").";".		
@@ -594,7 +594,7 @@ function get_cats($products_id)
 			}
 			$res.=CSVkonform($vor).";".			
 				CSVkonform(unhtmlentities($current_cat->categories_name)).";".
-				CSVkonform(substr(unhtmlentities($current_cat->categories_description,0,64000))).";".
+				CSVkonform(substr(unhtmlentities($current_cat->categories_description),0,64000)).";".
 				CSVkonform($catId).";".
 				CSVkonform($current_cat_status->categories_status).";".
 				CSVkonform($catimage).";".

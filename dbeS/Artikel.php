@@ -23,14 +23,14 @@ if (auth())
 		$cur_query = eS_execute_query("select * from ".DB_PREFIX."eazysales_einstellungen");
 		$einstellungen = mysql_fetch_object($cur_query);
 		
-		$artikel->kArtikel = $_POST["KeyArtikel"];
-		$artikel->cArtNr = $_POST["ArtikelNo"];
-		$artikel->cName = $_POST["ArtikelName"];
-		$artikel->cBeschreibung = $_POST["ArtikelBeschreibung"];
+		$artikel->kArtikel = realEscape($_POST["KeyArtikel"]);
+		$artikel->cArtNr = realEscape($_POST["ArtikelNo"]);
+		$artikel->cName = realEscape($_POST["ArtikelName"]);
+		$artikel->cBeschreibung = realEscape($_POST["ArtikelBeschreibung"]);
 		$artikel->fVKBrutto = realEscape($_POST["ArtikelVKBrutto"]);
 		$artikel->fVKNetto = realEscape($_POST["ArtikelVKNetto"]);
 		$artikel->fMwSt = realEscape($_POST["ArtikelMwSt"]);
-		$artikel->cAnmerkung = $_POST["ArtikelAnmerkung"];
+		$artikel->cAnmerkung = realEscape($_POST["ArtikelAnmerkung"]);
 		$artikel->nLagerbestand = max(realEscape($_POST["ArtikelLagerbestand"]),0);
 		$artikel->cEinheit = realEscape($_POST["ArtikelEinheit"]);
 		$artikel->nMindestbestellmaenge = realEscape($_POST["ArtikelMindBestell"]);
@@ -40,9 +40,9 @@ if (auth())
 		$artikel->cTopArtikel = realEscape($_POST["TopAngebot"]);
 		$artikel->fGewicht = realEscape($_POST["Gewicht"]);
 		$artikel->cNeu = realEscape($_POST["Neu"]);
-		$artikel->cKurzBeschreibung = $_POST["ArtikelKurzBeschreibung"];
+		$artikel->cKurzBeschreibung = realEscape($_POST["ArtikelKurzBeschreibung"]);
 		$artikel->fUVP = realEscape($_POST["ArtikelUVP"]);
-		$artikel->cHersteller = $_POST["Hersteller"];
+		$artikel->cHersteller = realEscape($_POST["Hersteller"]);
 			
 		$startseite=0;
 		if ($artikel->cTopArtikel=="Y")
@@ -103,39 +103,12 @@ if (auth())
 				$products_statpage_piece_value=$startseite.",";
 			}
 				
-			eS_execute_query("INSERT INTO 	
-								".DB_PREFIX."products 
-									(products_shippingtime, 
-									$products_statpage_piece 
-									products_model, 
-									products_price, 
-									products_tax_class_id, 
-									products_quantity, 
-									products_ean, 
-									products_weight, 
-									brand_id, 
-									product_template, 
-									options_template, 
-									products_status, 
-									products_date_added,
-									products_col_top,
-									products_col_left,
-									products_col_right,
-									products_col_bottom) 
-								values 
-									($shipping_status,
-									".$products_statpage_piece_value."\"".$artikel->cArtNr."\",".$artikel->fVKNetto.",$products_tax_class_id,$artikel->nLagerbestand,\"".$artikel->cBarcode."\",$artikel->fGewicht,$brand_id,\"".$einstellungen->prod_product_template."\",
-									\"".$einstellungen->prod_options_template."\",
-									1,
-									NOW(),
-									'".GLOBAL_COLUMN_TOP."',
-									'".GLOBAL_COLUMN_LEFT."',
-									'".GLOBAL_COLUMN_RIGHT."',
-									'".GLOBAL_COLUMN_BOTTOM."')");
+			eS_execute_query("insert into ".DB_PREFIX."products (products_shippingtime, $products_statpage_piece products_model, products_price, products_tax_class_id, products_quantity, products_ean, products_weight, brand_id, product_template, options_template, products_status, products_date_added) values ($shipping_status,".$products_statpage_piece_value."\"".$artikel->cArtNr."\",".$artikel->fVKNetto.",$products_tax_class_id,$artikel->nLagerbestand,\"".$artikel->cBarcode."\",$artikel->fGewicht,$brand_id,\"".$einstellungen->prod_product_template."\",\"".$einstellungen->prod_options_template."\",1,now())");
 			//hole id
-			$query = eS_execute_query("SELECT LAST_INSERT_ID()");
+			$query = eS_execute_query("select LAST_INSERT_ID()");
 			$products_id_arr = mysql_fetch_row($query);
-			if ($products_id_arr[0]>0) {
+			if ($products_id_arr[0]>0)
+			{
 				//müssen Preise in spezielle tabellen?
 				$products_id=$products_id_arr[0];
 				insertPreise($products_id_arr[0]);
@@ -144,12 +117,17 @@ if (auth())
 				
 				//erstelle leere description für alle anderen Sprachen
 				$sonstigeSprachen = getSonstigeSprachen($einstellungen->languages_id);
-				if (is_array($sonstigeSprachen)) {
-					foreach ($sonstigeSprachen as $sonstigeSprache) {
+				if (is_array($sonstigeSprachen))
+				{
+					foreach ($sonstigeSprachen as $sonstigeSprache)
+					{
+						//eS_execute_query("insert into products_description (products_id, products_name, language_id) values (".$products_id_arr[0].",\"".$artikel->cName."\", $sonstigeSprache)");
 						eS_execute_query("insert into ".DB_PREFIX."products_description (products_id, products_name, products_description, products_short_description, language_id) values (".$products_id_arr[0].",\"".$artikel->cName."\", \"".$artikel->cBeschreibung."\", \"".$artikel->cKurzBeschreibung."\", $sonstigeSprache)");
 					}
 				}
-			} else  {
+			}
+			else 
+			{
 				//Fehler aufgetreten
 				$return=1;
 			}

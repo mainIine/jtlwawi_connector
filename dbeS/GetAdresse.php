@@ -30,21 +30,21 @@ if (auth())
 			$Order->customers_id = 10000000-$Order->orders_id;
 
 		
-		echo(CSVkonform($Order->orders_id.';');
-		echo(CSVkonform($Order->customers_id.';');
-		echo(CSVkonform($Order->delivery_firstname.';');
-		echo(CSVkonform($Order->delivery_lastname.';');
-		echo(CSVkonform($Order->delivery_company.';');
-		echo(CSVkonform($Order->delivery_street_address.';');
-		echo(CSVkonform($Order->delivery_postcode.';');
-		echo(CSVkonform($Order->delivery_city.';');
-		echo(CSVkonform($Order->delivery_country.';');
-		echo(CSVkonform($Order->customers_telephone.';');
+		echo(CSVkonform($Order->orders_id).';');
+		echo(CSVkonform($Order->customers_id).';');
+		echo(CSVkonform($Order->delivery_firstname).';');
+		echo(CSVkonform($Order->delivery_lastname).';');
+		echo(CSVkonform($Order->delivery_company).';');
+		echo(CSVkonform($Order->delivery_street_address).';');
+		echo(CSVkonform($Order->delivery_postcode).';');
+		echo(CSVkonform($Order->delivery_city).';');
+		echo(CSVkonform($Order->delivery_country).';');
+		echo(CSVkonform($Order->customers_telephone).';');
 		echo(';'); //keine Faxangaben
-		echo(CSVkonform($Order->customers_email_address.';');
+		echo(CSVkonform($Order->customers_email_address).';');
 		echo(';'); //Type
 		echo(';'); //anrede
-		echo(CSVkonform($Order->delivery_suburb.';'); //adresszusatz
+		echo(CSVkonform($Order->delivery_suburb).';'); //adresszusatz
 		echo("\n");
 		
 		$return=0;

@@ -28,19 +28,8 @@ if (auth()) {
 		$Kunde = mysql_fetch_object($cur_query);
 
 		//zusatzinfos vom kunden holen		
-		$cur_query = eS_execute_query("SELECT 
-											c.customers_gender, 
-											c.customers_newsletter, 
-											c.customers_fax, 
-											c.customers_vat_id, 
-											date_format(c.customers_dob, \"%d.%m.%Y\") AS geburtsdatum 
-										FROM 
-											".DB_PREFIX."orders o, 
-											".DB_PREFIX."customers c
-										WHERE 
-											o.customers_id = c.customers_id 
-										AND 
-											c.customers_id = ".$Kunde->customers_id);
+		$cur_query = eS_execute_query("SELECT c.customers_gender,				customers.customers_newsletter, c.customers_fax, 								customers.customers_vat_id, date_format(customers.customers_dob, \"%d.%m.%Y\") AS geburtsdatum FROM ".DB_PREFIX."orders, ".DB_PREFIX."customers WHERE 		orders.customers_id = customers.customers_id AND 								customers.customers_id = ".$Kunde->customers_id);
+
 		$cust = mysql_fetch_object($cur_query);
 		
 		$Kunde->customers_gender = $cust->customers_gender;
