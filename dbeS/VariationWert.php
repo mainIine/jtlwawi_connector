@@ -34,14 +34,14 @@ if (auth())
 		$einstellungen = mysql_fetch_object($cur_query);
 		
 		$products_options_id = getFremdEigenschaft($EigenschaftWert->kEigenschaft);
-		if ($products_options_id>0)
-		{
+
+		if ($products_options_id > 0) {
 			//schaue, ob dieser EigenschaftsWert bereits global existiert für diese Eigenschaft!!
 			$cur_query = eS_execute_query("SELECT 
 												pov.products_options_values_id 
 											FROM 
-												".DB_PREFIX."products_options_values,
-												".DB_PREFIX."products_options_values_to_products_options 
+												".DB_PREFIX."products_options_values AS pov,
+												".DB_PREFIX."products_options_values_to_products_options AS povtpo
 											WHERE 
 												povtpo.products_options_id = '".$products_options_id."'
 											AND 
@@ -51,8 +51,7 @@ if (auth())
 											AND 
 												pov.products_options_values_name = '".$EigenschaftWert->cName."' ");
 
-			if (mysql_num_rows($cur_query) < 1)
-			{
+			if (!mysql_num_rows($cur_query)) {
 				//erstelle diesen Wert global
 				//hole max PK
 				$cur_query = eS_execute_query("SELECT MAX(products_options_values_id) FROM ".DB_PREFIX."products_options_values");
