@@ -23,6 +23,10 @@ if (auth())
 		$cur_query = eS_execute_query("select * from ".DB_PREFIX."eazysales_einstellungen");
 		$einstellungen = mysql_fetch_object($cur_query);
 		
+		$conf_query = eS_execute_query("SELECT configuration_key, configuration_value FROM ".DB_PREFIX."configuration WHERE configuration_key LIKE 'GLOBAL_COLUMN_%'");
+		while($conf = mysql_fetch_array($conf_query))
+			define($conf['cfgKey'], $conf['cfgValue']);
+		
 		$artikel->kArtikel = realEscape($_POST["KeyArtikel"]);
 		$artikel->cArtNr = realEscape($_POST["ArtikelNo"]);
 		$artikel->cName = realEscape($_POST["ArtikelName"]);
@@ -64,8 +68,7 @@ if (auth())
 			
 		//update oder insert?
 		$products_id = getFremdArtikel($artikel->kArtikel);
-		if ($products_id>0)
-		{
+		if ($products_id>0) {
 			//update
 
 			//attribute löschen
@@ -86,9 +89,8 @@ if (auth())
 			eS_execute_query("update ".DB_PREFIX."products_description set products_name=\"$artikel->cName\", products_description=\"$artikel->cBeschreibung\", products_short_description=\"$artikel->cKurzBeschreibung\", products_keywords=\"\", products_meta_title=\"\", products_meta_description=\"\", products_meta_keywords=\"\", products_url=\"\" where products_id=".$products_id." and language_id=".$einstellungen->languages_id);
 			//kundengrp preise
 			insertPreise($products_id);
-		}
-		else 
-		{
+
+		} else {
 			//insert
 			//hole Mwst classId
 			$products_tax_class_id = holeSteuerId($artikel->fMwSt);
@@ -97,18 +99,52 @@ if (auth())
 			
 			$products_statpage_piece="";
 			$products_statpage_piece_value="";
-			if ($products_startpage_exists)
-			{
+			if ($products_startpage_exists) {
 				$products_statpage_piece ="products_startpage,";
 				$products_statpage_piece_value=$startseite.",";
 			}
 				
-			eS_execute_query("insert into ".DB_PREFIX."products (products_shippingtime, $products_statpage_piece products_model, products_price, products_tax_class_id, products_quantity, products_ean, products_weight, brand_id, product_template, options_template, products_status, products_date_added) values ($shipping_status,".$products_statpage_piece_value."\"".$artikel->cArtNr."\",".$artikel->fVKNetto.",$products_tax_class_id,$artikel->nLagerbestand,\"".$artikel->cBarcode."\",$artikel->fGewicht,$brand_id,\"".$einstellungen->prod_product_template."\",\"".$einstellungen->prod_options_template."\",1,now())");
+			eS_execute_query("INSERT INTO 
+								".DB_PREFIX."products 
+										(products_shippingtime, 
+										$products_statpage_piece 
+										products_model, 
+										products_price, 
+										products_tax_class_id, 
+										products_quantity, 
+										products_ean, 
+										products_weight, 
+										brand_id, 
+										product_template, 
+										options_template, 
+										products_status, 
+										products_date_added,
+										products_col_top,
+										products_col_left,
+										products_col_right,
+										products_col_bottom) 
+									VALUES 
+										($shipping_status,
+										".$products_statpage_piece_value.
+										"\"".$artikel->cArtNr."\",
+										".$artikel->fVKNetto.",
+										$products_tax_class_id,
+										$artikel->nLagerbestand,
+										\"".$artikel->cBarcode."\",
+										$artikel->fGewicht,
+										$brand_id,
+										\"".$einstellungen->prod_product_template."\",
+										\"".$einstellungen->prod_options_template."\",
+										1,
+										NOW())",
+										\"".GLOBAL_COLUMN_TOP."\",
+										\"".GLOBAL_COLUMN_LEFT."\",
+										\"".GLOBAL_COLUMN_RIGHT."\",
+										\"".GLOBAL_COLUMN_BOTTOM."\");
 			//hole id
 			$query = eS_execute_query("select LAST_INSERT_ID()");
 			$products_id_arr = mysql_fetch_row($query);
-			if ($products_id_arr[0]>0)
-			{
+			if ($products_id_arr[0]>0) {
 				//müssen Preise in spezielle tabellen?
 				$products_id=$products_id_arr[0];
 				insertPreise($products_id_arr[0]);
@@ -117,19 +153,14 @@ if (auth())
 				
 				//erstelle leere description für alle anderen Sprachen
 				$sonstigeSprachen = getSonstigeSprachen($einstellungen->languages_id);
-				if (is_array($sonstigeSprachen))
-				{
-					foreach ($sonstigeSprachen as $sonstigeSprache)
-					{
-						//eS_execute_query("insert into products_description (products_id, products_name, language_id) values (".$products_id_arr[0].",\"".$artikel->cName."\", $sonstigeSprache)");
+				if (is_array($sonstigeSprachen)) {
+					foreach ($sonstigeSprachen as $sonstigeSprache) {
 						eS_execute_query("insert into ".DB_PREFIX."products_description (products_id, products_name, products_description, products_short_description, language_id) values (".$products_id_arr[0].",\"".$artikel->cName."\", \"".$artikel->cBeschreibung."\", \"".$artikel->cKurzBeschreibung."\", $sonstigeSprache)");
 					}
 				}
-			}
-			else 
-			{
+			} else {
 				//Fehler aufgetreten
-				$return=1;
+				$return = 1;
 			}
 		}
 		
