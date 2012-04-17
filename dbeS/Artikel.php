@@ -136,7 +136,7 @@ if (auth())
 										\"".$einstellungen->prod_product_template."\",
 										\"".$einstellungen->prod_options_template."\",
 										1,
-										NOW())",
+										NOW()",
 										GLOBAL_COLUMN_TOP,
 										GLOBAL_COLUMN_LEFT,
 										GLOBAL_COLUMN_RIGHT,
