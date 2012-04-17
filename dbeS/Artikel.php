@@ -137,10 +137,10 @@ if (auth())
 										\"".$einstellungen->prod_options_template."\",
 										1,
 										NOW())",
-										\"".GLOBAL_COLUMN_TOP."\",
-										\"".GLOBAL_COLUMN_LEFT."\",
-										\"".GLOBAL_COLUMN_RIGHT."\",
-										\"".GLOBAL_COLUMN_BOTTOM."\");
+										GLOBAL_COLUMN_TOP,
+										GLOBAL_COLUMN_LEFT,
+										GLOBAL_COLUMN_RIGHT,
+										GLOBAL_COLUMN_BOTTOM);
 			//hole id
 			$query = eS_execute_query("select LAST_INSERT_ID()");
 			$products_id_arr = mysql_fetch_row($query);
