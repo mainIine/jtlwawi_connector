@@ -54,7 +54,7 @@ if (auth()) {
 					$image_p = imagecreatetruecolor($new_width, $new_height);
 					imagecopyresampled($image_p, $im, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
 					imagejpeg($image_p, DIR_FS_CATALOG_THUMBNAIL_IMAGES.$bildname, 80);
-					chmod (DIR_FS_CATALOG_THUMBNAIL_IMAGES.$bildname, 0644);
+					@chmod (DIR_FS_CATALOG_THUMBNAIL_IMAGES.$bildname, 0644);
 					
 					//info
 					$cur_query = eS_execute_query("select configuration_value from ".DB_PREFIX."configuration where configuration_key=\"PRODUCT_IMAGE_INFO_WIDTH\"");
@@ -72,7 +72,7 @@ if (auth()) {
 					$image_p = imagecreatetruecolor($new_width, $new_height);
 					imagecopyresampled($image_p, $im, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
 					imagejpeg($image_p, DIR_FS_CATALOG_INFO_IMAGES.$bildname, 80);
-					chmod (DIR_FS_CATALOG_INFO_IMAGES.$bildname, 0644);
+					@chmod (DIR_FS_CATALOG_INFO_IMAGES.$bildname, 0644);
 								
 					//popup
 					$cur_query = eS_execute_query("select configuration_value from ".DB_PREFIX."configuration where configuration_key=\"PRODUCT_IMAGE_POPUP_WIDTH\"");
@@ -90,8 +90,25 @@ if (auth()) {
 					$image_p = imagecreatetruecolor($new_width, $new_height);
 					imagecopyresampled($image_p, $im, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
 					imagejpeg($image_p, DIR_FS_CATALOG_POPUP_IMAGES.$bildname, 80);
-					chmod (DIR_FS_CATALOG_POPUP_IMAGES.$bildname, 0644);
+					@chmod (DIR_FS_CATALOG_POPUP_IMAGES.$bildname, 0644);
 					
+					//icon
+					$cur_query = eS_execute_query("SELECT configuration_value FROM ".DB_PREFIX."configuration WHERE configuration_key = '".PRODUCT_IMAGE_ICON_WIDTH."'");
+					$width_obj = mysql_fetch_object($cur_query);
+					$cur_query = eS_execute_query("SELECT configuration_value FROM ".DB_PREFIX."configuration WHERE configuration_key = '".PRODUCT_IMAGE_ICON_HEIGHT."'");
+					$height_obj = mysql_fetch_object($cur_query);
+					$new_width = 300;
+					if ($width_obj->configuration_value>0)
+						$new_width = $width_obj->configuration_value;
+					$new_height = round ($new_width / $ratio);
+					if ($new_height>$height_obj->configuration_value){
+						$new_height=$height_obj->configuration_value;
+						$new_width = round ($new_height * $ratio);
+					}
+					$image_p = imagecreatetruecolor($new_width, $new_height);
+					imagecopyresampled($image_p, $im, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
+					imagejpeg($image_p, DIR_FS_CATALOG_ICON_IMAGES.$bildname, 80);
+					@chmod (DIR_FS_CATALOG_ICON_IMAGES.$bildname, 0644);
 				
 					//updaten
 					if (intval($_POST['nNr'])==1)
