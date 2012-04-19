@@ -106,43 +106,6 @@ if (auth())
 				
 			eS_execute_query("INSERT INTO  
 								".DB_PREFIX."products 
-<<<<<<< HEAD
-										(products_shippingtime, 
-										$products_statpage_piece 
-										products_model, 
-										products_price, 
-										products_tax_class_id, 
-										products_quantity, 
-										products_ean, 
-										products_weight, 
-										brand_id, 
-										product_template, 
-										options_template, 
-										products_status, 
-										products_date_added,
-										products_col_top,
-										products_col_left,
-										products_col_right,
-										products_col_bottom) 
-									VALUES 
-										($shipping_status,
-										".$products_statpage_piece_value.
-										"\"".$artikel->cArtNr."\",
-										".$artikel->fVKNetto.",
-										$products_tax_class_id,
-										$artikel->nLagerbestand,
-										\"".$artikel->cBarcode."\",
-										$artikel->fGewicht,
-										$brand_id,
-										\"".$einstellungen->prod_product_template."\",
-										\"".$einstellungen->prod_options_template."\",
-										1,
-										NOW()",
-										GLOBAL_COLUMN_TOP,
-										GLOBAL_COLUMN_LEFT,
-										GLOBAL_COLUMN_RIGHT,
-										GLOBAL_COLUMN_BOTTOM);
-=======
 									(products_shippingtime, 
 									".$products_statpage_piece."
 									products_model, 
@@ -178,7 +141,6 @@ if (auth())
 									'".GLOBAL_COLUMN_LEFT."',
 									'".GLOBAL_COLUMN_RIGHT."',
 									'".GLOBAL_COLUMN_BOTTOM."')");
->>>>>>> Komma Fehler behoben
 			//hole id
 			$query = eS_execute_query("SELECT LAST_INSERT_ID()");
 			$products_id_arr = mysql_fetch_row($query);
