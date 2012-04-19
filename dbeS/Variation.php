@@ -38,17 +38,25 @@ if (auth())
 			{
 				//erstelle eigenschaft
 				//hole max PK
+				/*
 				$cur_query = eS_execute_query("select max(products_options_id) from ".DB_PREFIX."products_options");
 				$max_id_arr = mysql_fetch_row($cur_query);
 				$options_id->products_options_id = $max_id_arr[0]+1;
 				eS_execute_query("insert into ".DB_PREFIX."products_options (products_options_id,language_id,products_options_name) values ($options_id->products_options_id,$einstellungen->languages_id,\"$Eigenschaft->cName\")");
+				*/
+
+				eS_execute_query("INSERT INTO 
+										".DB_PREFIX."products_options 
+											(language_id,products_options_name) 
+										VALUES 
+											($einstellungen->languages_id,\"$Eigenschaft->cName\")");
+				
+				$options_id->products_options_id = mysql_insert_id();
 				
 				//erstelle leere description für alle anderen Sprachen
 				$sonstigeSprachen = getSonstigeSprachen($einstellungen->languages_id);
-				if (is_array($sonstigeSprachen))
-				{
-					foreach ($sonstigeSprachen as $sonstigeSprache)
-					{
+				if (is_array($sonstigeSprachen)) {
+					foreach ($sonstigeSprachen as $sonstigeSprache) {
 						eS_execute_query("insert into ".DB_PREFIX."products_options (products_options_id,language_id,products_options_name) values ($options_id->products_options_id,$sonstigeSprache,\"$Eigenschaft->cName\")");
 					}
 				}
