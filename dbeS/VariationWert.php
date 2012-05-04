@@ -30,7 +30,12 @@ if (auth())
 		$EigenschaftWert->fGewichtDiff = floatval($_POST["GewichtDiff"]);
 
 		//hole einstellungen
-		$cur_query = eS_execute_query("select languages_id, tax_class_id, tax_zone_id from ".DB_PREFIX."eazysales_einstellungen");
+		$cur_query = eS_execute_query("SELECT 
+											languages_id, 
+											tax_class_id, 
+											tax_zone_id 
+										FROM 
+											".DB_PREFIX."eazysales_einstellungen");
 		$einstellungen = mysql_fetch_object($cur_query);
 		
 		$products_options_id = getFremdEigenschaft($EigenschaftWert->kEigenschaft);
@@ -54,71 +59,89 @@ if (auth())
 			if (!mysql_num_rows($cur_query)) {
 				//erstelle diesen Wert global
 				//hole max PK
-				$cur_query = eS_execute_query("SELECT MAX(products_options_values_id) FROM ".DB_PREFIX."products_options_values");
-				$max_id_arr = mysql_fetch_row($cur_query);
-				$options_values->products_options_values_id = $max_id_arr[0]+1;
-				eS_execute_query("insert into ".DB_PREFIX."products_options_values (products_options_values_id,language_id,products_options_values_name) values ($options_values->products_options_values_id,$einstellungen->languages_id,\"$EigenschaftWert->cName\")");			
+				$query = mysql_fetch_array(mysql_query("SELECT MAX(products_options_values_id) AS next_id FROM ".DB_PREFIX."products_options_values"));
+				$options_values->products_options_values_id = ($query['next_id']+1);
+				eS_execute_query("INSERT INTO ".DB_PREFIX."products_options_values 
+										(products_options_values_id,
+										language_id,
+										products_options_values_name) 
+									VALUES 
+										('".$options_values->products_options_values_id."',
+										'".$einstellungen->languages_id."',
+										'".$EigenschaftWert->cName."'
+									)");			
 				
 				//erstelle leere description für alle anderen Sprachen
 				$sonstigeSprachen = getSonstigeSprachen($einstellungen->languages_id);
-				if (is_array($sonstigeSprachen))
-				{
-					foreach ($sonstigeSprachen as $sonstigeSprache)
-					{
-						eS_execute_query("insert into ".DB_PREFIX."products_options_values (products_options_values_id,language_id,products_options_values_name) values ($options_values->products_options_values_id,$sonstigeSprache,\"$EigenschaftWert->cName\")");
+				if(is_array($sonstigeSprachen)){
+					foreach ($sonstigeSprachen AS $sonstigeSprache){
+						eS_execute_query("INSERT INTO ".DB_PREFIX."products_options_values 
+												(products_options_values_id,
+												language_id,
+												products_options_values_name) 
+											VALUES 
+												('".$options_values->products_options_values_id."',
+												'".$sonstigeSprache."',
+												'".$EigenschaftWert->cName."'
+											)");
 					}
 				}
 				
 				//erstelle verknüpfung zwischen wert und eig
-				eS_execute_query("insert into ".DB_PREFIX."products_options_values_to_products_options (products_options_id,products_options_values_id) values($products_options_id,$options_values->products_options_values_id)");
+				eS_execute_query("INSERT INTO ".DB_PREFIX."products_options_values_to_products_options 
+										(products_options_id,
+										products_options_values_id) 
+									VALUES
+										('".$products_options_id."',
+										'".$options_values->products_options_values_id."'
+									)");
 			}
 		
 			//erstelle product_attribute
 			$kArtikel = getEigenschaftsArtikel($EigenschaftWert->kEigenschaft);
-			if ($kArtikel>0)
-			{
+			if ($kArtikel > 0) {
 				$products_id = getFremdArtikel($kArtikel);
-				if ($products_id>0)
-				{
+				if ($products_id > 0) {
 					//hole products_tax_class_id
-					$cur_query = eS_execute_query("select products_tax_class_id from ".DB_PREFIX."products where products_id=".$products_id);
+					$cur_query = eS_execute_query("SELECT products_tax_class_id FROM ".DB_PREFIX."products WHERE products_id = '".$products_id."'");
 					$cur_tax = mysql_fetch_object($cur_query);
 					$Aufpreis = ($EigenschaftWert->fAufpreis/(100+get_tax($cur_tax->products_tax_class_id)))*100;
 					$Aufpreis_prefix = "+";
-					if ($Aufpreis<0)
-					{
+					if ($Aufpreis < 0){
 						$Aufpreis_prefix = "-";
 						$Aufpreis*=-1;
 					}
 					$Gewicht_prefix = "+";
-					if ($EigenschaftWert->fGewichtDiff<0)
-					{
+					if ($EigenschaftWert->fGewichtDiff < 0) {
 						$Gewicht_prefix = "-";
 						$EigenschaftWert->fGewichtDiff*=-1;
 					}
-					eS_execute_query("insert into ".DB_PREFIX."products_attributes (
-													products_id,
-													options_id,
-													options_values_id,
-													options_values_price,
-													price_prefix,
-													attributes_model,
-													attributes_stock,
-													options_values_weight,
-													weight_prefix,
-													sortorder) 
-													values(
-													$products_id,
-													$products_options_id,
-													$options_values->products_options_values_id,
-													$Aufpreis,
-													\"".$Aufpreis_prefix."\",
-													\"".$EigenschaftWert->cArtikelNr."\",
-													$EigenschaftWert->nLager,
-													$EigenschaftWert->fGewichtDiff,
-													\"".$Gewicht_prefix."\",
-													$EigenschaftWert->nSort)");
-					$query = eS_execute_query("select LAST_INSERT_ID()");
+					eS_execute_query("INSERT INTO 
+											".DB_PREFIX."products_attributes (
+											products_id,
+											options_id,
+											options_values_id,
+											options_values_price,
+											price_prefix,
+											attributes_model,
+											attributes_stock,
+											options_values_weight,
+											weight_prefix,
+											sortorder) 
+										VALUES
+											('".$products_id."',
+											'".$products_options_id."',
+											'".$options_values->products_options_values_id."',
+											'".$Aufpreis."',
+											'".$Aufpreis_prefix."',
+											'".$EigenschaftWert->cArtikelNr."',
+											'".$EigenschaftWert->nLager."',
+											'".$EigenschaftWert->fGewichtDiff."',
+											'".$Gewicht_prefix."',
+											'".$EigenschaftWert->nSort."'
+										)");
+
+					$query = eS_execute_query("SELECT LAST_INSERT_ID()");
 					$last_attribute_id_arr = mysql_fetch_row($query);					
 					setMappingEigenschaftsWert($EigenschaftWert->kEigenschaftWert, $last_attribute_id_arr[0], $kArtikel);
 				}
@@ -132,4 +155,3 @@ if (auth())
 mysql_close();
 echo($return);
 logge($return);
-?>
