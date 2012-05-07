@@ -13,19 +13,17 @@
 
 require_once("syncinclude.php");
 
-$return=3;
-if (auth())
-{
-	if (intval($_POST["action"]) == 1 && intval($_POST['KeyArtikel']))
-	{
+$return = 3;
+if(auth()){
+	if(intval($_POST["action"]) == 1 && intval($_POST['KeyArtikel'])){
 		$return = 0;
 		//hole einstellungen
-		$cur_query = eS_execute_query("select * from ".DB_PREFIX."eazysales_einstellungen");
+		$cur_query = eS_execute_query("SELECT * FROM ".DB_PREFIX."eazysales_einstellungen");
 		$einstellungen = mysql_fetch_object($cur_query);
 		
 		$conf_query = eS_execute_query("SELECT configuration_key, configuration_value FROM ".DB_PREFIX."configuration WHERE configuration_key LIKE 'GLOBAL_COLUMN_%'");
 		while($conf = mysql_fetch_array($conf_query))
-			define($conf['cfgKey'], $conf['cfgValue']);
+			define($conf['configuration_key'], $conf['configuration_value']);
 		
 		$artikel->kArtikel = realEscape($_POST["KeyArtikel"]);
 		$artikel->cArtNr = realEscape($_POST["ArtikelNo"]);
@@ -35,7 +33,7 @@ if (auth())
 		$artikel->fVKNetto = realEscape($_POST["ArtikelVKNetto"]);
 		$artikel->fMwSt = realEscape($_POST["ArtikelMwSt"]);
 		$artikel->cAnmerkung = realEscape($_POST["ArtikelAnmerkung"]);
-		$artikel->nLagerbestand = max(realEscape($_POST["ArtikelLagerbestand"]),0);
+		$artikel->nLagerbestand = max(realEscape($_POST["ArtikelLagerbestand"]), 0);
 		$artikel->cEinheit = realEscape($_POST["ArtikelEinheit"]);
 		$artikel->nMindestbestellmaenge = realEscape($_POST["ArtikelMindBestell"]);
 		$artikel->cBarcode = realEscape($_POST["ArtikelBarcode"]);
@@ -48,67 +46,66 @@ if (auth())
 		$artikel->fUVP = realEscape($_POST["ArtikelUVP"]);
 		$artikel->cHersteller = realEscape($_POST["Hersteller"]);
 			
-		$startseite=0;
-		if ($artikel->cTopArtikel=="Y")
-			$startseite=1;
-		$shipping_status=0;
-		if ($GLOBALS['einstellungen']->shipping_status_id>0)
-			$shipping_status=$GLOBALS['einstellungen']->shipping_status_id;
-			
-		//existiert products_startpage in products?
-		$products_startpage_exists = false;
-		$result = mysql_query("SHOW COLUMNS FROM ".DB_PREFIX."products");
-		if (mysql_num_rows($result) > 0) {
-			while ($row = mysql_fetch_object($result)) 
-			{
-				if ($row->Field == 'products_startpage')
-					$products_startpage_exists = true;
-			}
-		}
+		$startseite = 0;
+		if($artikel->cTopArtikel=="Y")
+			$startseite = 1;
+		$shipping_status = '0';
+		if($GLOBALS['einstellungen']->shipping_status_id > 0)
+			$shipping_status = $GLOBALS['einstellungen']->shipping_status_id;
 			
 		//update oder insert?
 		$products_id = getFremdArtikel($artikel->kArtikel);
-		if ($products_id>0) {
-			//update
+		
+		if($products_id > 0) { # Update
+			eS_execute_query("DELETE FROM ".DB_PREFIX."products_attributes WHERE products_id = ".$products_id);
+			eS_execute_query("DELETE FROM ".DB_PREFIX."products_to_categories WHERE products_id = ".$products_id);
 
-			//attribute löschen
-			eS_execute_query("delete from ".DB_PREFIX."products_attributes where products_id=".$products_id);
-			//KategorieArtikel löschen
-			eS_execute_query("delete from ".DB_PREFIX."products_to_categories where products_id=".$products_id);
-			
-			//evtl. andere MwSt?
 			$products_tax_class_id = holeSteuerId($artikel->fMwSt);
-			//evtl. neuer Hersteller?
 			$brand_id = holeHerstellerId($artikel->cHersteller);
-			//update products
-			$products_statpage_piece="";
-			if ($products_startpage_exists)
-				$products_statpage_piece ="products_startpage=$startseite,";
-			eS_execute_query("update ".DB_PREFIX."products set products_fsk18=0, products_shippingtime=$shipping_status, ".$products_statpage_piece." products_model=\"$artikel->cArtNr\", products_price=\"".$artikel->fVKNetto."\", products_tax_class_id=\"$products_tax_class_id\", products_quantity=\"$artikel->nLagerbestand\", products_ean=\"$artikel->cBarcode\", products_weight=\"$artikel->fGewicht\", brand_id=\"$brand_id\", products_status=1, products_last_modified=now(), product_template=\"".$einstellungen->prod_product_template."\", options_template=\"".$einstellungen->prod_options_template."\" where products_id=".$products_id);
-			//update products_description
-			eS_execute_query("update ".DB_PREFIX."products_description set products_name=\"$artikel->cName\", products_description=\"$artikel->cBeschreibung\", products_short_description=\"$artikel->cKurzBeschreibung\", products_keywords=\"\", products_meta_title=\"\", products_meta_description=\"\", products_meta_keywords=\"\", products_url=\"\" where products_id=".$products_id." and language_id=".$einstellungen->languages_id);
+			
+			eS_execute_query("UPDATE 
+									".DB_PREFIX."products 
+								SET
+									products_fsk18 = '0',
+									products_shippingtime = '".$shipping_status."',
+									products_startpage = '".$startseite."',
+									products_model = '".$artikel->cArtNr."',
+									products_price = '".$artikel->fVKNetto."',
+									products_tax_class_id = '".$products_tax_class_id."',
+									products_quantity = '".$artikel->nLagerbestand."',
+									products_ean = '".$artikel->cBarcode."',
+									products_weight = '".$artikel->fGewicht."',
+									brand_id = '".$brand_id."',
+									products_status = '1',
+									products_last_modified = NOW(),
+									product_template = '".$einstellungen->prod_product_template."',
+									options_template = '".$einstellungen->prod_options_template."'
+								WHERE 
+									products_id = '".$products_id."'");
+
+			eS_execute_query("UPDATE 
+									".DB_PREFIX."products_description 
+								SET 
+									products_name = '".$artikel->cName."',
+									products_description = '".$artikel->cBeschreibung."',
+									products_short_description = '".$artikel->cKurzBeschreibung."'
+								WHERE
+									products_id = '".$products_id."'
+								AND
+									language_id = '".$einstellungen->languages_id."'");
 			//kundengrp preise
 			insertPreise($products_id);
 
-		} else {
-			//insert
+		} else { # Insert
 			//hole Mwst classId
 			$products_tax_class_id = holeSteuerId($artikel->fMwSt);
 			//setze Hersteller, falls es ihn noch nicht gibt
-			$brand_id = holeHerstellerId($artikel->cHersteller);	
+			$brand_id = holeHerstellerId($artikel->cHersteller);
 			
-			$products_statpage_piece="";
-			$products_statpage_piece_value="";
-			if ($products_startpage_exists) {
-				$products_statpage_piece ="products_startpage,";
-				$products_statpage_piece_value=$startseite.",";
-			}
-				
-			eS_execute_query("INSERT INTO  
-								".DB_PREFIX."products 
+			eS_execute_query("INSERT INTO ".DB_PREFIX."products 
 									(products_shippingtime, 
-									".$products_statpage_piece."
-									products_model, 
+									products_startpage,
+									products_model,
 									products_price, 
 									products_tax_class_id, 
 									products_quantity, 
@@ -125,7 +122,7 @@ if (auth())
 									products_col_bottom) 
 								VALUES 
 									('".$shipping_status."',
-									".$products_statpage_piece_value."
+									'".$startseite."',
 									'".$artikel->cArtNr."',
 									'".$artikel->fVKNetto."',
 									'".$products_tax_class_id."',
@@ -135,37 +132,56 @@ if (auth())
 									'".$brand_id."',
 									'".$einstellungen->prod_product_template."',
 									'".$einstellungen->prod_options_template."',
-									1,
+									'1',
 									NOW(),
 									'".GLOBAL_COLUMN_TOP."',
 									'".GLOBAL_COLUMN_LEFT."',
 									'".GLOBAL_COLUMN_RIGHT."',
 									'".GLOBAL_COLUMN_BOTTOM."')");
-			//hole id
-			$query = eS_execute_query("SELECT LAST_INSERT_ID()");
-			$products_id_arr = mysql_fetch_row($query);
-			if ($products_id_arr[0]>0) {
-				//müssen Preise in spezielle tabellen?
-				$products_id=$products_id_arr[0];
-				insertPreise($products_id_arr[0]);
-				eS_execute_query("insert into ".DB_PREFIX."products_description (products_id, products_name, products_description, products_short_description, language_id) values (".$products_id_arr[0].",\"".$artikel->cName."\", \"".$artikel->cBeschreibung."\", \"".$artikel->cKurzBeschreibung."\", $einstellungen->languages_id)");
-				setMappingArtikel($artikel->kArtikel,$products_id_arr[0]);
+
+			$products_id = mysql_insert_id();
+			if($products_id > 0) {
+				insertPreise($products_id);
+				eS_execute_query("INSERT INTO 
+									".DB_PREFIX."products_description 
+									(products_id, 
+									products_name, 
+									products_description, 
+									products_short_description, 
+									language_id) 
+								VALUES 
+									(".$products_id.",
+									'".$artikel->cName."',
+									'".$artikel->cBeschreibung."',
+									'".$artikel->cKurzBeschreibung."',
+									'".$einstellungen->languages_id."')");
+
+				setMappingArtikel($artikel->kArtikel,$products_id);
 				
 				//erstelle leere description für alle anderen Sprachen
 				$sonstigeSprachen = getSonstigeSprachen($einstellungen->languages_id);
-				if (is_array($sonstigeSprachen)) {
-					foreach ($sonstigeSprachen as $sonstigeSprache) {
-						eS_execute_query("insert into ".DB_PREFIX."products_description (products_id, products_name, products_description, products_short_description, language_id) values (".$products_id_arr[0].",\"".$artikel->cName."\", \"".$artikel->cBeschreibung."\", \"".$artikel->cKurzBeschreibung."\", $sonstigeSprache)");
+				if(is_array($sonstigeSprachen)) {
+					foreach($sonstigeSprachen AS $sonstigeSprache) {
+						eS_execute_query("INSERT INTO ".DB_PREFIX."products_description 
+												(products_id,
+												products_name,
+												products_description,
+												products_short_description,
+												language_id)
+											VALUES
+												('".$products_id."',
+												'".$artikel->cName."',
+												'".$artikel->cBeschreibung."',
+												'".$artikel->cKurzBeschreibung."',
+												'".$sonstigeSprache."')");
 					}
 				}
-			} else {
-				//Fehler aufgetreten
+
+			} else //Fehler aufgetreten
 				$return = 1;
-			}
 		}
-		
-		if ($products_id>0)
-		{
+
+		if ($products_id > 0){
 			//setze Kundengruppenerlaubnis für alle gruppen
 			//Attribute.php bearbeitet Ausnahmen der Kundengruppenerlaubnis
 			setzeKundengruppenerlaubnis("", $products_id);
@@ -176,25 +192,20 @@ if (auth())
 			$cur_query = eS_execute_query("select products_vpe_id from ".DB_PREFIX."products_vpe where language_id=".$einstellungen->languages_id." and  products_vpe_name=\"".$artikel->cEinheit."\"");
 			$products_vpe_id_arr = mysql_fetch_row($cur_query);
 			if ($products_vpe_id_arr[0]>0)
-			{
 				$products_vpe_id=$products_vpe_id_arr[0];
-			}
-			else 
-			{
-				//füge neuen Shippingstatus ein
-				$cur_query = eS_execute_query("select max(products_vpe_id) from ".DB_PREFIX."products_vpe");
+
+			else {
+				$cur_query = eS_execute_query("SELECT max(products_vpe_id) from ".DB_PREFIX."products_vpe");
 				$max_shipping_products_vpe_arr = mysql_fetch_row($cur_query);
 				$products_vpe_id = $max_shipping_products_vpe_arr[0]+1;
 				eS_execute_query("insert into ".DB_PREFIX."products_vpe (products_vpe_id, language_id, products_vpe_name) values ($products_vpe_id, $einstellungen->languages_id, \"$artikel->cEinheit\")");
 			}
 			eS_execute_query("update ".DB_PREFIX."products set products_vpe=".$products_vpe_id." where products_id=".$products_id);
 		}
- 	}
-	else
-		$return=5;
+ 	} else
+		$return = 5;
 
-	if (intval($_POST["action"]) == 3 && intval($_POST['KeyArtikel']))
-	{
+	if (intval($_POST["action"]) == 3 && intval($_POST['KeyArtikel'])){
 		$products_id = getFremdArtikel(intval($_POST['KeyArtikel']));
 		if ($products_id>0)
 			eS_execute_query("update ".DB_PREFIX."products set products_status=0 where products_id=".$products_id);
@@ -206,14 +217,11 @@ mysql_close();
 echo($return);
 logge($return);
 
-function insertPreise($products_id)
-{
+function insertPreise($products_id){
 	$personalOfferTable = DB_PREFIX."personal_offers_by_customers_status_";
 	$endKunden_arr = explode(";",$GLOBALS['einstellungen']->mappingEndkunde);
-	foreach ($endKunden_arr as $customers_status_id)
-	{
-		if ($customers_status_id>=0 && strlen($customers_status_id)>0)
-		{
+	foreach ($endKunden_arr as $customers_status_id){
+		if ($customers_status_id>=0 && strlen($customers_status_id)>0){
 			$table = $personalOfferTable.$customers_status_id;
 			eS_execute_query("delete from $table where products_id=".$products_id);
 			eS_execute_query("insert into $table (products_id, quantity, personal_offer) values ($products_id,1,".floatval($_POST["ArtikelVKNetto"]).")");
@@ -280,15 +288,12 @@ function holeSteuerId($MwSt)
 	$tax = mysql_fetch_object($cur_query);
 	if ($tax->tax_class_id>0)
 		return $tax->tax_class_id;
-	else 
-	{
+	else {
 		//erstelle klasse
 		eS_execute_query("insert into ".DB_PREFIX."tax_class (tax_class_title, date_added) values (\"JTL-Wawi Steuerklasse ".$MwSt."%\", now())");
-		$query = eS_execute_query("select LAST_INSERT_ID()");
-		$tax_class_id_arr = mysql_fetch_row($query);
+		$tax_class_id = mysql_insert_id();
 		//füge diesen Steuersatz ein
-		eS_execute_query("insert into ".DB_PREFIX."tax_rates (tax_zone_id, tax_class_id, tax_priority, tax_rate, date_added) values (".$GLOBALS['einstellungen']->tax_zone_id.",".$tax_class_id_arr[0].", ".$GLOBALS['einstellungen']->tax_priority.", ".$MwSt.", now())");
-		return $tax_class_id_arr[0];
+		eS_execute_query("insert into ".DB_PREFIX."tax_rates (tax_zone_id, tax_class_id, tax_priority, tax_rate, date_added) values (".$GLOBALS['einstellungen']->tax_zone_id.",".$tax_class_id.", ".$GLOBALS['einstellungen']->tax_priority.", ".$MwSt.", now())");
+		return $tax_class_id;
 	}
 }
-?>

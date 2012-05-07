@@ -11,18 +11,21 @@
  * @version v1.05 / 06.06.07
 */
 
-error_reporting( E_ALL & ~(E_STRICT|E_NOTICE));
+#error_reporting(E_ALL & ~(E_STRICT|E_NOTICE));
+error_reporting(E_ALL);
 
-define (DOCROOT_PATH, "../../../../../");
+define('DOCROOT_PATH', '../../../../../');
+
+date_default_timezone_set('Europe/Berlin');
 
 //get DB Connecion
 // include server parameters
-require_once (DOCROOT_PATH.'admin/includes/configure.php');
+require_once(DOCROOT_PATH.'admin/includes/configure.php');
 
 $link = mysql_connect (DB_SERVER, DB_SERVER_USERNAME, DB_SERVER_PASSWORD);
 mysql_select_db(DB_DATABASE);
 
-define ('ES_ENABLE_LOGGING', 0);
+define ('ES_ENABLE_LOGGING', 1);
 define ('ES_ATTRIBUTE_AN_BESCHREIBUNG_ANHAENGEN', 0);
 
 function eS_execute_query($query) {
@@ -55,23 +58,19 @@ function auth() {
  * @param String $return Rückgabestring
  * @return String verbesserten Vardump
  */
-function Dump($vardump)
-{
+function Dump($vardump){
+	$return = '';
 	if (gettype($vardump)!="object" && gettype($vardump)!="array")
 		$return.= $vardump;
-	elseif (gettype($vardump)=="object")
-	{
+	elseif (gettype($vardump) == "object") {
 		foreach(get_object_vars($vardump) as $key => $value)
-		{
-			$return.= $key." => ".Dump($value).", ";
-		}
-	}
-	elseif (gettype($vardump)=="array")
-	{
+			$return.= $key." => ".Dump($value)."\n";
+
+	} elseif(gettype($vardump) == "array"){
 		foreach ($vardump as $key => $value)
-			$return.= $key." => ".Dump($value).", ";
+			$return.= $key." => ".Dump($value)."\n";
 	}
-	if ($return{strlen($return)-2}==',')
+	if (!empty($return) && (strlen($return)-2) == ',')
 		return substr($return,0,strlen($return)-2)." ";
 	else 
 		return $return;
@@ -83,22 +82,19 @@ function Dump($vardump)
  * @param mixed $value
  * @return $value mit Anführungszeichen vorne und hinten. Falls $value leer, werden diese Zeichen nicht hinzugefügt.
  */
-function CSVkonform($value)
-{
+function CSVkonform($value){
 	if (strlen($value)>0)
 		return '"'.str_replace('"','""',$value).'"';
 }
 
-function datetime2germanDate($datetime)
-{
+function datetime2germanDate($datetime){
 	list ($datum, $uhrzeit) = split(" ",$datetime);
 	list ($jahr, $monat, $tag) = split ("-",$datum);
 	list ($std, $min, $sec) = split (":",$uhrzeit);
 	return $tag.'.'.$monat.'.'.$jahr.' '.$std.':'.$min.':'.$sec;
 }
 
-function unhtmlentities($string)
-{
+function unhtmlentities($string){
    // replace numeric entities
    $string = preg_replace('~&#x([0-9a-f]+);~ei', 'chr(hexdec("\\1"))', $string);
    $string = preg_replace('~&#([0-9]+);~e', 'chr("\\1")', $string);
@@ -165,40 +161,50 @@ function setMappingBestellPos ($mein_key)
 	return $id_arr[0];
 }
 
-function setMappingEigenschaftsWert ($eS_key, $mein_key, $kArtikel)
-{
+function setMappingEigenschaftsWert ($eS_key, $mein_key, $kArtikel){
 	$eS_key = intval($eS_key);
 	$mein_key = intval($mein_key);
-	if ($mein_key && $eS_key)
-	{
-		eS_execute_query("delete from ".DB_PREFIX."eazysales_mvariationswert where kEigenschaftsWert=".$eS_key);
+	if ($mein_key && $eS_key){
+		eS_execute_query("DELETE FROM ".DB_PREFIX."eazysales_mvariationswert WHERE kEigenschaftsWert = '".$eS_key."'");
 		//ist mein_key schon drin?
-		$cur_query = eS_execute_query("select products_attributes_id from ".DB_PREFIX."eazysales_mvariationswert where kArtikel=$kArtikel and products_attributes_id=".$mein_key);
-		$prod = mysql_fetch_object($cur_query);
-		if ($prod->products_id>0)
+		$query = eS_execute_query("SELECT 
+										products_attributes_id 
+									FROM 
+										".DB_PREFIX."eazysales_mvariationswert 
+									WHERE 
+										kArtikel = '".$kArtikel."'
+									AND 
+										products_attributes_id = '".$mein_key."'");
+		if (mysql_num_rows($query))
 			return "";
-		else 
-		{
-			eS_execute_query("insert into ".DB_PREFIX."eazysales_mvariationswert (products_attributes_id, kEigenschaftsWert, kArtikel) values ($mein_key,$eS_key,$kArtikel)");
+		else {
+			eS_execute_query("INSERT INTO ".DB_PREFIX."eazysales_mvariationswert 
+									(products_attributes_id,
+									kEigenschaftsWert,
+									kArtikel) 
+								VALUES 
+									('".$mein_key."',
+									'".$eS_key."',
+									'".$kArtikel."'
+								)");
 		}
 	}
 }
 
-function getFremdArtikel($eS_key)
-{
-	if ($eS_key>0)
-	{
-		$cur_query = eS_execute_query("select products_id from ".DB_PREFIX."eazysales_martikel where kArtikel=".$eS_key);
-		$prod = mysql_fetch_object($cur_query);
-		return $prod->products_id;
+function getFremdArtikel($eS_key){
+	if($eS_key > 0) {
+		$query = eS_execute_query("SELECT products_id FROM ".DB_PREFIX."eazysales_martikel WHERE kArtikel = '".$eS_key."'");
+		if(mysql_num_rows($query)) {
+			$query = mysql_fetch_array($query);
+			return $query['products_id'];
+		}
+		return 0;
 	}
 	return 0;
 }
 
-function getEsArtikel($mein_key)
-{
-	if ($mein_key>0)
-	{
+function getEsArtikel($mein_key){
+	if ($mein_key>0){
 		$cur_query = eS_execute_query("select kArtikel from ".DB_PREFIX."eazysales_martikel where products_id=".$mein_key);
 		$prod = mysql_fetch_object($cur_query);
 		return $prod->kArtikel;
@@ -327,12 +333,11 @@ function logge($return)
 function get_tax($products_tax_class_id, $tax_zone_id=0)
 {
 	if (!$tax_zone_id)
-	{
 		$tax_zone_id= $GLOBALS['einstellungen']->tax_zone_id;
-	}
+
 	if (!$products_tax_class_id || !$tax_zone_id)
 		return 0;
-	//get tax class
+
 	$taxclass_query = eS_execute_query("select * from ".DB_PREFIX."tax_rates where tax_class_id=".$products_tax_class_id." and tax_zone_id=".$tax_zone_id);
 	$tax = mysql_fetch_object($taxclass_query);
 	return ($tax->tax_rate);

@@ -23,7 +23,7 @@ if (auth())
 		$Attribut->products_id = getFremdArtikel(intval($_POST["KeyArtikel"]));
 		$Attribut->name = $_POST["Name"];
 		$Attribut->content = $_POST["StringWert"];
-		if (strlen($_POST["TextWert"])>0)
+		if(isset($_POST['TextWert']) && strlen($_POST["TextWert"])>0)
 			$Attribut->content = $_POST["TextWert"];
 		attributBearbeiten ($Attribut);
 	}

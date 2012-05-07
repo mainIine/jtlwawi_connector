@@ -13,56 +13,58 @@
 
 require_once("syncinclude.php");
 
-$return=3;
-if (auth())
-{
-	if (intval($_POST["action"]) == 1 && intval($_POST['KeyEigenschaft']))
-	{		
+$return = 3;
+if(auth()){
+	if(intval($_POST["action"]) == 1 && intval($_POST['KeyEigenschaft'])){		
 		$Eigenschaft->kEigenschaft = intval($_POST["KeyEigenschaft"]);
 		$Eigenschaft->kArtikel = intval($_POST["KeyArtikel"]);
 		$Eigenschaft->cName = realEscape($_POST["Name"]);
 		$Eigenschaft->nSort = intval($_POST["Sort"]);
 
-		//hole products_id
 		$products_id = getFremdArtikel($Eigenschaft->kArtikel);
-		if ($products_id>0)
-		{
-			//hole einstellungen
+		if($products_id > 0) {
 			$cur_query = eS_execute_query("select languages_id from ".DB_PREFIX."eazysales_einstellungen");
 			$einstellungen = mysql_fetch_object($cur_query);
-			
-			//hol products_options_id
-			$cur_query = eS_execute_query("select products_options_id from ".DB_PREFIX."products_options where language_id=".$einstellungen->languages_id." and products_options_name=\"$Eigenschaft->cName\"");
-			$options_id = mysql_fetch_object($cur_query);
-			if (!$options_id->products_options_id)
-			{
-				//erstelle eigenschaft
-				//hole max PK
-				/*
-				$cur_query = eS_execute_query("select max(products_options_id) from ".DB_PREFIX."products_options");
-				$max_id_arr = mysql_fetch_row($cur_query);
-				$options_id->products_options_id = $max_id_arr[0]+1;
-				eS_execute_query("insert into ".DB_PREFIX."products_options (products_options_id,language_id,products_options_name) values ($options_id->products_options_id,$einstellungen->languages_id,\"$Eigenschaft->cName\")");
-				*/
 
-				eS_execute_query("INSERT INTO 
-										".DB_PREFIX."products_options 
-											(language_id,products_options_name) 
-										VALUES 
-											($einstellungen->languages_id,\"$Eigenschaft->cName\")");
+			$cur_query = eS_execute_query("SELECT 
+												products_options_id 
+											FROM 
+												".DB_PREFIX."products_options 
+											WHERE 
+												language_id = '".$einstellungen->languages_id."'
+											AND 
+												products_options_name = '".$Eigenschaft->cName."'");
+			$options_id = mysql_fetch_object($cur_query);
+			if(!$options_id->products_options_id){
+				$query = mysql_fetch_array(mysql_query("SELECT MAX(products_options_id) AS next_id FROM ".DB_PREFIX."products_options"));
+				$options_id->products_options_id = ($query['next_id']+1);
 				
-				$options_id->products_options_id = mysql_insert_id();
-				
-				//erstelle leere description für alle anderen Sprachen
+				eS_execute_query("INSERT INTO ".DB_PREFIX."products_options 
+										(products_options_id,
+										language_id,
+										products_options_name) 
+									VALUES 
+										('".$options_id->products_options_id."',
+										'".$einstellungen->languages_id."',
+										'".$Eigenschaft->cName."'
+									)");
+
 				$sonstigeSprachen = getSonstigeSprachen($einstellungen->languages_id);
-				if (is_array($sonstigeSprachen)) {
-					foreach ($sonstigeSprachen as $sonstigeSprache) {
-						eS_execute_query("insert into ".DB_PREFIX."products_options (products_options_id,language_id,products_options_name) values ($options_id->products_options_id,$sonstigeSprache,\"$Eigenschaft->cName\")");
+				if(is_array($sonstigeSprachen)){
+					foreach ($sonstigeSprachen AS $sonstigeSprache) {
+						eS_execute_query("INSERT INTO ".DB_PREFIX."products_options 
+												(products_options_id,
+												language_id,
+												products_options_name) 
+											VALUES 
+												('".$options_id->products_options_id."',
+												'".$sonstigeSprache."',
+												'".$Eigenschaft->cName."'
+											)");
 					}
 				}
 			}
-			//mapping zu variation 
-			setMappingEigenschaft($Eigenschaft->kEigenschaft,$options_id->products_options_id,$Eigenschaft->kArtikel);
+			setMappingEigenschaft($Eigenschaft->kEigenschaft, $options_id->products_options_id, $Eigenschaft->kArtikel);
 			$return = 0;
 		}
  	}
@@ -73,4 +75,3 @@ if (auth())
 mysql_close();
 echo($return);
 logge($return);
-?>

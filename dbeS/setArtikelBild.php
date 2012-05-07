@@ -75,9 +75,9 @@ if (auth()) {
 					@chmod (DIR_FS_CATALOG_INFO_IMAGES.$bildname, 0644);
 								
 					//popup
-					$cur_query = eS_execute_query("select configuration_value from ".DB_PREFIX."configuration where configuration_key=\"PRODUCT_IMAGE_POPUP_WIDTH\"");
+					$cur_query = eS_execute_query("select configuration_value from ".DB_PREFIX."configuration where configuration_key = 'PRODUCT_IMAGE_POPUP_WIDTH'");
 					$width_obj = mysql_fetch_object($cur_query);
-					$cur_query = eS_execute_query("select configuration_value from ".DB_PREFIX."configuration where configuration_key=\"PRODUCT_IMAGE_POPUP_HEIGHT\"");
+					$cur_query = eS_execute_query("select configuration_value from ".DB_PREFIX."configuration where configuration_key = 'PRODUCT_IMAGE_POPUP_HEIGHT'");
 					$height_obj = mysql_fetch_object($cur_query);
 					$new_width = 300;
 					if ($width_obj->configuration_value>0)
@@ -93,9 +93,9 @@ if (auth()) {
 					@chmod (DIR_FS_CATALOG_POPUP_IMAGES.$bildname, 0644);
 					
 					//icon
-					$cur_query = eS_execute_query("SELECT configuration_value FROM ".DB_PREFIX."configuration WHERE configuration_key = '".PRODUCT_IMAGE_ICON_WIDTH."'");
+					$cur_query = eS_execute_query("SELECT configuration_value FROM ".DB_PREFIX."configuration WHERE configuration_key = 'PRODUCT_IMAGE_ICON_WIDTH'");
 					$width_obj = mysql_fetch_object($cur_query);
-					$cur_query = eS_execute_query("SELECT configuration_value FROM ".DB_PREFIX."configuration WHERE configuration_key = '".PRODUCT_IMAGE_ICON_HEIGHT."'");
+					$cur_query = eS_execute_query("SELECT configuration_value FROM ".DB_PREFIX."configuration WHERE configuration_key = 'PRODUCT_IMAGE_ICON_HEIGHT'");
 					$height_obj = mysql_fetch_object($cur_query);
 					$new_width = 300;
 					if ($width_obj->configuration_value>0)

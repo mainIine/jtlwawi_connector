@@ -11,13 +11,11 @@
  * @version v1.01 / 17.09.06
 */
 
-require_once("syncinclude.php");
+require_once('syncinclude.php');
 
-$return=3;
-if (auth())
-{
-	if (intval($_POST["action"]) == 1 && intval($_POST['KeyEigenschaftWert']))
-	{
+$return = 3;
+if(auth()){
+	if(intval($_POST["action"]) == 1 && intval($_POST['KeyEigenschaftWert'])){
 		$return = 0;
 		
 		$EigenschaftWert->kEigenschaftWert = intval($_POST["KeyEigenschaftWert"]);
@@ -40,7 +38,7 @@ if (auth())
 		
 		$products_options_id = getFremdEigenschaft($EigenschaftWert->kEigenschaft);
 
-		if ($products_options_id > 0) {
+		if($products_options_id > 0) {
 			//schaue, ob dieser EigenschaftsWert bereits global existiert für diese Eigenschaft!!
 			$cur_query = eS_execute_query("SELECT 
 												pov.products_options_values_id 
@@ -55,12 +53,15 @@ if (auth())
 												pov.language_id = '".$einstellungen->languages_id."'
 											AND 
 												pov.products_options_values_name = '".$EigenschaftWert->cName."' ");
-
-			if (!mysql_num_rows($cur_query)) {
+			
+			$options_values = mysql_fetch_object($cur_query);
+			
+			if(!$options_values->products_options_values_id) {
 				//erstelle diesen Wert global
 				//hole max PK
 				$query = mysql_fetch_array(mysql_query("SELECT MAX(products_options_values_id) AS next_id FROM ".DB_PREFIX."products_options_values"));
 				$options_values->products_options_values_id = ($query['next_id']+1);
+				
 				eS_execute_query("INSERT INTO ".DB_PREFIX."products_options_values 
 										(products_options_values_id,
 										language_id,
@@ -96,26 +97,27 @@ if (auth())
 										'".$options_values->products_options_values_id."'
 									)");
 			}
-		
-			//erstelle product_attribute
+
 			$kArtikel = getEigenschaftsArtikel($EigenschaftWert->kEigenschaft);
 			if ($kArtikel > 0) {
 				$products_id = getFremdArtikel($kArtikel);
 				if ($products_id > 0) {
-					//hole products_tax_class_id
 					$cur_query = eS_execute_query("SELECT products_tax_class_id FROM ".DB_PREFIX."products WHERE products_id = '".$products_id."'");
 					$cur_tax = mysql_fetch_object($cur_query);
 					$Aufpreis = ($EigenschaftWert->fAufpreis/(100+get_tax($cur_tax->products_tax_class_id)))*100;
+
 					$Aufpreis_prefix = "+";
 					if ($Aufpreis < 0){
 						$Aufpreis_prefix = "-";
 						$Aufpreis*=-1;
 					}
+
 					$Gewicht_prefix = "+";
 					if ($EigenschaftWert->fGewichtDiff < 0) {
 						$Gewicht_prefix = "-";
 						$EigenschaftWert->fGewichtDiff*=-1;
 					}
+
 					eS_execute_query("INSERT INTO 
 											".DB_PREFIX."products_attributes (
 											products_id,
@@ -141,14 +143,12 @@ if (auth())
 											'".$EigenschaftWert->nSort."'
 										)");
 
-					$query = eS_execute_query("SELECT LAST_INSERT_ID()");
-					$last_attribute_id_arr = mysql_fetch_row($query);					
-					setMappingEigenschaftsWert($EigenschaftWert->kEigenschaftWert, $last_attribute_id_arr[0], $kArtikel);
+					$last_attribute_id = mysql_insert_id();					
+					setMappingEigenschaftsWert($EigenschaftWert->kEigenschaftWert, $last_attribute_id, $kArtikel);
 				}
 			}
 		}
- 	}
-	else
+ 	} else
 		$return=5;
 }
 
